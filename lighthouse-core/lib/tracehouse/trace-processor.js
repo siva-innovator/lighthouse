@@ -376,8 +376,8 @@ class TraceProcessor {
     for (const event of tabTrace.mainThreadEvents) {
       if (!this.isScheduleableTask(event) || !event.dur) continue;
 
-      const start = (event.ts - tabTrace.navigationStartEvt.ts) / 1000;
-      const end = (event.ts + event.dur - tabTrace.navigationStartEvt.ts) / 1000;
+      const start = (event.ts - tabTrace.timeOriginEvt.ts) / 1000;
+      const end = (event.ts + event.dur - tabTrace.timeOriginEvt.ts) / 1000;
       if (start > endTime || end < startTime) continue;
 
       topLevelEvents.push({
@@ -494,18 +494,19 @@ class TraceProcessor {
     // Our navStart will be the last frame navigation in the trace
     const navigationStart = frameEvents.filter(this._isNavigationStartOfInterest).pop();
     if (!navigationStart) throw this.createNoNavstartError();
+    const timeOriginEvt = navigationStart;
 
     // Find our first paint of this frame
-    const firstPaint = frameEvents.find(e => e.name === 'firstPaint' && e.ts > navigationStart.ts);
+    const firstPaint = frameEvents.find(e => e.name === 'firstPaint' && e.ts > timeOriginEvt.ts);
 
     // FCP will follow at/after the FP. Used in so many places we require it.
     const firstContentfulPaint = frameEvents.find(
-      e => e.name === 'firstContentfulPaint' && e.ts > navigationStart.ts
+      e => e.name === 'firstContentfulPaint' && e.ts > timeOriginEvt.ts
     );
 
     // fMP will follow at/after the FP
     let firstMeaningfulPaint = frameEvents.find(
-      e => e.name === 'firstMeaningfulPaint' && e.ts > navigationStart.ts
+      e => e.name === 'firstMeaningfulPaint' && e.ts > timeOriginEvt.ts
     );
     let fmpFellBack = false;
 
@@ -533,8 +534,8 @@ class TraceProcessor {
     // Iterate the events backwards.
     for (let i = frameEvents.length - 1; i >= 0; i--) {
       const e = frameEvents[i];
-      // If the event's timestamp is before the navigation start, stop.
-      if (e.ts <= navigationStart.ts) break;
+      // If the event's timestamp is before the time origin, stop.
+      if (e.ts <= timeOriginEvt.ts) break;
       // If the last lcp event in the trace is 'Invalidate', there is inconclusive data to determine LCP.
       if (e.name === 'largestContentfulPaint::Invalidate') {
         lcpInvalidated = true;
@@ -547,9 +548,9 @@ class TraceProcessor {
       break;
     }
 
-    const load = frameEvents.find(e => e.name === 'loadEventEnd' && e.ts > navigationStart.ts);
+    const load = frameEvents.find(e => e.name === 'loadEventEnd' && e.ts > timeOriginEvt.ts);
     const domContentLoaded = frameEvents.find(
-      e => e.name === 'domContentLoadedEventEnd' && e.ts > navigationStart.ts
+      e => e.name === 'domContentLoadedEventEnd' && e.ts > timeOriginEvt.ts
     );
 
     // subset all trace events to just our tab's process (incl threads other than main)
@@ -560,7 +561,7 @@ class TraceProcessor {
     const mainThreadEvents = processEvents
       .filter(e => e.tid === mainFrameIds.tid);
 
-    // traceEnd must exist since at least navigationStart event was verified as existing.
+    // traceEnd must exist since at least timeOrigin event was verified as existing.
     const traceEnd = trace.traceEvents.reduce((max, evt) => {
       return max.ts > evt.ts ? max : evt;
     });
@@ -570,7 +571,7 @@ class TraceProcessor {
     const getTimestamp = (event) => event && event.ts;
     /** @type {TraceTimesWithoutFCP} */
     const timestamps = {
-      navigationStart: navigationStart.ts,
+      timeOrigin: timeOriginEvt.ts,
       firstPaint: getTimestamp(firstPaint),
       firstContentfulPaint: getTimestamp(firstContentfulPaint),
       firstMeaningfulPaint: getTimestamp(firstMeaningfulPaint),
@@ -581,12 +582,12 @@ class TraceProcessor {
     };
 
     /** @param {number} ts */
-    const getTiming = (ts) => (ts - navigationStart.ts) / 1000;
+    const getTiming = (ts) => (ts - timeOriginEvt.ts) / 1000;
     /** @param {number=} ts */
     const maybeGetTiming = (ts) => ts === undefined ? undefined : getTiming(ts);
     /** @type {TraceTimesWithoutFCP} */
     const timings = {
-      navigationStart: 0,
+      timeOrigin: 0,
       firstPaint: maybeGetTiming(timestamps.firstPaint),
       firstContentfulPaint: maybeGetTiming(timestamps.firstContentfulPaint),
       firstMeaningfulPaint: maybeGetTiming(timestamps.firstMeaningfulPaint),
@@ -610,7 +611,7 @@ class TraceProcessor {
       mainThreadEvents,
       mainFrameIds,
       frames,
-      navigationStartEvt: navigationStart,
+      timeOriginEvt: timeOriginEvt,
       firstPaintEvt: firstPaint,
       firstContentfulPaintEvt: firstContentfulPaint,
       firstMeaningfulPaintEvt: firstMeaningfulPaint,

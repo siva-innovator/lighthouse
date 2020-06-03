@@ -79,11 +79,12 @@ async function main() {
     `${VARIANT_DIR}/all-legacy-polyfills/all-legacy-polyfills-core-js-3/main.bundle.min.js`;
   const bundleContents = fs.readFileSync(bundlePath, 'utf-8');
   const bundleMap = JSON.parse(fs.readFileSync(bundlePath + '.map', 'utf-8'));
+  /** @type {Pick<LH.Artifacts, 'ScriptElements'|'SourceMaps'>} */
   const artifacts = {
+    // @ts-ignore don't need most properties on ScriptElement.
     ScriptElements: [{requestId: '', src: '', content: bundleContents}],
     SourceMaps: [{scriptUrl: '', map: bundleMap}],
   };
-  // @ts-ignore
   const bundles = await JsBundles.compute_(artifacts);
   const bundleFileSizes = bundles[0].sizes.files;
 
@@ -92,23 +93,20 @@ async function main() {
     return bundleFileSizes[module];
   });
 
-  /** @type {Map<string, number[]>} */
-  const polyfillDependenciesEncoded = new Map();
+  /** @type {Record<string, number[]>} */
+  const polyfillDependenciesEncoded = {};
   for (const [name, modules] of polyfillDependencies.entries()) {
-    polyfillDependenciesEncoded.set(name, modules.map(module => allModules.indexOf(module)));
+    if (name === 'common') continue;
+    polyfillDependenciesEncoded[name] = modules.map(module => allModules.indexOf(module));
   }
 
   const maxSize = sum(moduleSizes);
   const baseSize = sum((polyfillDependencies.get('common') || []).map(m => bundleFileSizes[m]));
-  polyfillDependenciesEncoded.delete('common');
 
   /** @type {PolyfillSizeEstimator} */
   const polyfillDependencyGraphData = {
     moduleSizes,
-    dependencies: [...polyfillDependenciesEncoded.entries()].reduce((acc, [name, modules]) => {
-      acc[name] = modules;
-      return acc;
-    }, /** @type {Record<string, number[]>} */ ({})),
+    dependencies: polyfillDependenciesEncoded,
     maxSize,
     baseSize,
   };

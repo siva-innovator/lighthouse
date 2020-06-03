@@ -11,12 +11,24 @@
  * @fileoverview - Used to generate size estimation data for polyfills in LegacyJavaScript audit.
  *
  * Returns a flattened graph of modules found in bundles used for an individual core-js polyfill.
+ * `.dependencies` is indexed by the polyfill name and be an array of module indicies
+ * `.moduleSizes` is an array of numbers, indexed by the arrays in `.dependencies`
+ * `.maxSize`
  *
  * USAGE:
  *   1. Run `node run.js`
  *   2. Run `node create-polyfill-size-estimation.js`
  *   3. Inspect `polyfill-graph-data.json`
  */
+
+/**
+ * @typedef PolyfillSizeEstimator
+ * @property {Record<string, number[]>} dependencies indexed by the polyfill name. array of module indicies
+ * @property {number[]} moduleSizes indices in the arrays in `.dependencies` are for this array
+ * @property {number} maxSize sum of `.moduleSizes`
+ * @property {number} baseSize size of using core-js at all. sum of common modules, and does not show up
+ *                             in `.dependencies` or `.moduleSizes`
+*/
 
 const fs = require('fs');
 const makeHash = require('./hash.js');
@@ -89,6 +101,8 @@ async function main() {
   const maxSize = sum(moduleSizes);
   const baseSize = sum((polyfillDependencies.get('common') || []).map(m => bundleFileSizes[m]));
   polyfillDependenciesEncoded.delete('common');
+
+  /** @type {PolyfillSizeEstimator} */
   const polyfillDependencyGraphData = {
     moduleSizes,
     dependencies: [...polyfillDependenciesEncoded.entries()].reduce((acc, [name, modules]) => {
@@ -103,7 +117,7 @@ async function main() {
     tab: '  ',
     spaceBeforeColon: '',
     spaceInsideObject: '',
-    shouldExpand: _ => !Array.isArray(_),
+    shouldExpand: value => !Array.isArray(value),
   });
   fs.writeFileSync(OUTPUT_PATH, json);
 }

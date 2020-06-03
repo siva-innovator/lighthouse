@@ -349,65 +349,34 @@ class LegacyJavascript extends ByteEfficiencyAudit {
 
   /**
    * @param {PatternMatchResult[]} matches
+   * @return {number}
    */
   static estimateWastedBytes(matches) {
+    // Split up signals based on polyfill / transform. Only polyfills start with @.
     const polyfillSignals = matches.filter(m => !m.name.startsWith('@')).map(m => m.name);
     const transformSignals = matches.filter(m => m.name.startsWith('@')).map(m => m.name);
 
-    // experimenting.
-    const POLYFILL_USE_GRAPH = true;
-
     let estimatedWastedBytesFromPolyfills = 0;
-    if (POLYFILL_USE_GRAPH) {
-      // TODO
-      const graph = require('./polyfill-graph-data.json');
-      const modulesSeen = new Set();
-      for (const polyfillSignal of polyfillSignals) {
-        // @ts-ignore: lacking index type.
-        const modules = graph.dependencies[polyfillSignal];
-        for (const module of modules) {
-          modulesSeen.add(module);
-        }
+    /** @type {import('../../scripts/legacy-javascript/create-polyfill-size-estimation.js').PolyfillSizeEstimator} */
+    const graph = require('./polyfill-graph-data.json');
+    const modulesSeen = new Set();
+    for (const polyfillSignal of polyfillSignals) {
+      const modules = graph.dependencies[polyfillSignal];
+      for (const module of modules) {
+        modulesSeen.add(module);
       }
-
-      if (polyfillSignals.length > 0) estimatedWastedBytesFromPolyfills += graph.baseSize;
-      estimatedWastedBytesFromPolyfills += graph.baseSize;
-      estimatedWastedBytesFromPolyfills += [...modulesSeen].reduce((acc, module) => {
-        return acc + graph.moduleSizes[module];
-      }, 0);
-      // Not needed?
-      estimatedWastedBytesFromPolyfills =
-        Math.min(estimatedWastedBytesFromPolyfills, graph.maxSize);
-    } else {
-      const typedArrayPolyfills = [
-        'Float32Array',
-        'Float64Array',
-        'Int16Array',
-        'Int32Array',
-        'Int8Array',
-        'Uint16Array',
-        'Uint32Array',
-        'Uint8Array',
-        'Uint8ClampedArray',
-      ];
-      const typedArrayCount = typedArrayPolyfills.filter(p => polyfillSignals.includes(p)).length;
-
-      const POLYFILL_MAX_WASTE = 175764;
-      const POLYFILL_TYPED_WASTE = 40 * 1000; // ~60KiB, minus the base 20.
-      const POLYFILL_BASE_SIZE = 20 * 1000;
-
-      if (typedArrayCount > 0) estimatedWastedBytesFromPolyfills += POLYFILL_TYPED_WASTE;
-      if (polyfillSignals.length > 0) estimatedWastedBytesFromPolyfills += POLYFILL_BASE_SIZE;
-      // Linear estimation of non-typed polyfills (and minus one to exclude the base size above).
-      estimatedWastedBytesFromPolyfills += (polyfillSignals.length - typedArrayCount - 1)
-        * (POLYFILL_MAX_WASTE - POLYFILL_TYPED_WASTE - POLYFILL_BASE_SIZE)
-        / (this.getPolyfillData().length - typedArrayPolyfills.length - 1);
-      estimatedWastedBytesFromPolyfills =
-        Math.min(estimatedWastedBytesFromPolyfills, POLYFILL_MAX_WASTE);
     }
 
+    if (polyfillSignals.length > 0) estimatedWastedBytesFromPolyfills += graph.baseSize;
+    estimatedWastedBytesFromPolyfills += [...modulesSeen].reduce((acc, moduleIndex) => {
+      return acc + graph.moduleSizes[moduleIndex];
+    }, 0);
+    // Not needed?
+    estimatedWastedBytesFromPolyfills =
+      Math.min(estimatedWastedBytesFromPolyfills, graph.maxSize);
+
     const estimatedWastedBytesFromTransforms = 0;
-    // TODO
+    // TODO estimate transforms.
 
     const estimatedWastedBytes =
       estimatedWastedBytesFromPolyfills + estimatedWastedBytesFromTransforms;

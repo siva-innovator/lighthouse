@@ -14,6 +14,7 @@
 
 /** @typedef {{name: string, expression: string}} Pattern */
 /** @typedef {{name: string, line: number, column: number}} PatternMatchResult */
+/** @typedef {import('./byte-efficiency-audit.js').ByteEfficiencyProduct} ByteEfficiencyProduct */
 
 const ByteEfficiencyAudit = require('./byte-efficiency-audit.js');
 const JsBundles = require('../../computed/js-bundles.js');
@@ -387,7 +388,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
    * @param {LH.Artifacts} artifacts
    * @param {Array<LH.Artifacts.NetworkRequest>} networkRecords
    * @param {LH.Audit.Context} context
-   * @return {Promise<ByteEfficiencyAudit.ByteEfficiencyProduct>}
+   * @return {Promise<ByteEfficiencyProduct>}
    */
   static async audit_(artifacts, networkRecords, context) {
     const mainDocumentEntity = thirdPartyWeb.getEntity(artifacts.URL.finalUrl);
@@ -443,7 +444,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
         wastedBytesByUrl.set(row.url, row.wastedBytes);
       }
     }
-    await this.convertWastedResourceBytesToTransferBytes(artifacts, networkRecords, wastedBytesByUrl);
+    await this.convertResourceBytesToTransferBytes(artifacts, networkRecords, wastedBytesByUrl);
 
     /** @type {LH.Audit.Details.OpportunityColumnHeading[]} */
     const headings = [

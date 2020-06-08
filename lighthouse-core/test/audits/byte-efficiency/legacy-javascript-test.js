@@ -165,10 +165,10 @@ describe('LegacyJavaScript audit', () => {
     const codeSnippets = [
       'String.prototype.repeat = function() {}',
       'String.prototype["repeat"] = function() {}',
-      "String.prototype['repeat'] = function() {}",
+      'String.prototype[\'repeat\'] = function() {}',
       'Object.defineProperty(String.prototype, "repeat", function() {})',
-      "Object.defineProperty(String.prototype, 'repeat', function() {})",
-      "Object.defineProperty(window, 'WeakMap', function() {})",
+      'Object.defineProperty(String.prototype, \'repeat\', function() {})',
+      'Object.defineProperty(window, \'WeakMap\', function() {})',
       '$export($export.S,"Object",{values:function values(t){return i(t)}})',
       'WeakMap = function() {}',
       'window.WeakMap = function() {}',

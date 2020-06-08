@@ -235,7 +235,7 @@ class ByteEfficiencyAudit extends Audit {
    * @param {Array<LH.Artifacts.NetworkRequest>} networkRecords
    * @param {Map<string, number>} wastedBytesByUrl
    */
-  static async convertWastedResourceBytesToTransferBytes(artifacts, networkRecords, wastedBytesByUrl) {
+  static async convertResourceBytesToTransferBytes(artifacts, networkRecords, wastedBytesByUrl) {
     const mainDocumentRecord = await NetworkAnalyzer.findMainDocument(networkRecords);
     for (const [url, bytes] of wastedBytesByUrl.entries()) {
       const networkRecord = url === artifacts.URL.finalUrl ?

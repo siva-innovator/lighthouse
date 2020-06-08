@@ -186,7 +186,7 @@ class DuplicatedJavascript extends ByteEfficiencyAudit {
       items.push(otherItem);
     }
 
-    await this.convertWastedResourceBytesToTransferBytes(artifacts, networkRecords, wastedBytesByUrl);
+    await this.convertResourceBytesToTransferBytes(artifacts, networkRecords, wastedBytesByUrl);
 
     /** @type {LH.Audit.Details.OpportunityColumnHeading[]} */
     const headings = [

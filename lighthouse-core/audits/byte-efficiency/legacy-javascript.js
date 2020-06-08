@@ -410,12 +410,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     const urlToMatchResults =
       this.detectAcrossScripts(matcher, artifacts.ScriptElements, networkRecords, bundles);
     urlToMatchResults.forEach((matches, url) => {
-      // Only estimate savings if first party code has legacy code.
-      let wastedBytes = 0;
-      if (thirdPartyWeb.isFirstParty(url, mainDocumentEntity)) {
-        wastedBytes = this.estimateWastedBytes(matches);
-      }
-
+      const wastedBytes = this.estimateWastedBytes(matches);
       /** @type {typeof items[number]} */
       const row = {
         url,
@@ -441,14 +436,14 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     });
 
     // /** @type {Map<string, number>} */
-    // const wastedBytesByUrl = new Map();
-    // for (const row of items) {
-    //   // Only estimate savings if first party code has legacy code.
-    //   if (!thirdPartyWeb.isFirstParty(row.url, mainDocumentEntity)) {
-    //     continue;
-    //   }
-    // }
-    // await this.convertWastedResourceBytesToTransferBytes(artifacts, networkRecords, wastedBytesByUrl);
+    const wastedBytesByUrl = new Map();
+    for (const row of items) {
+      // Only estimate savings if first party code has legacy code.
+      if (!thirdPartyWeb.isFirstParty(row.url, mainDocumentEntity)) {
+        continue;
+      }
+    }
+    await this.convertWastedResourceBytesToTransferBytes(artifacts, networkRecords, wastedBytesByUrl);
 
     /** @type {LH.Audit.Details.OpportunityColumnHeading[]} */
     const headings = [
@@ -462,6 +457,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     return {
       items,
       headings,
+      wastedBytesByUrl,
     };
   }
 }

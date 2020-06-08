@@ -286,6 +286,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
       {
         name: '@babel/plugin-transform-classes',
         expression: 'Cannot call a class as a function',
+        estimator: result => 150 + result.count * '_classCallCheck()'.length,
       },
       {
         name: '@babel/plugin-transform-regenerator',
@@ -298,6 +299,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
       {
         name: '@babel/plugin-transform-spread',
         expression: /\.apply\(void 0,\s?_toConsumableArray/.source,
+        estimator: result => 1169 + result.count * '_toConsumableArray()'.length,
       },
     ];
   }

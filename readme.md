@@ -30,11 +30,11 @@
 
 ## Using Lighthouse in Chrome DevTools
 
-Lighthouse is integrated directly into the Chrome Developer Tools, under the "Audits" panel.
+Lighthouse is integrated directly into the Chrome DevTools, under the "Lighthouse" panel.
 
 **Installation**: install [Chrome](https://www.google.com/chrome/browser).
 
-**Run it**: open Chrome DevTools, select the Audits panel, and hit "Run audits".
+**Run it**: open Chrome DevTools, select the Lighthouse panel, and hit "Generate report".
 
 <img src="https://raw.githubusercontent.com/GoogleChrome/lighthouse/e7997b3db01de3553d8cb208a40f3d4fd350195c/assets/example_dev_tools.png" alt="Lighthouse integration in Chrome DevTools" width="500px">
 
@@ -339,6 +339,8 @@ This section details services that have integrated Lighthouse data. If you're wo
 
 ## Lighthouse Integrations in non-Web Perf services
 
+* **[PageWatch](https://pagewatch.dev/)** — PageWatch is a tool to find problem pages on your website.  It provides insights into spelling errors, layout issues, slow pages (powered by Lighthouse) and more.  PageWatch is offered via free and paid plans.
+
 * **[SEO Guard](https://www.seo-guard.com)** — SEO Guard is a website monitoring solution. It provides metrics based on Lighthouse scores. The service is offered via free and paid premium plans.
 
 * **[Fluxguard](https://fluxguard.com/)** - Fluxguard provides website DOM change monitoring orchestrated with Google Puppeteer, and audited by Lighthouse. Fluxguard is a freemium product, with monthly monitoring of up to 75 pages for free.
@@ -385,6 +387,7 @@ Other awesome open source projects that use Lighthouse.
 * **[react-lighthouse-viewer](https://www.npmjs.com/package/react-lighthouse-viewer)** - Render a Lighthouse JSON report in a React Component.
 * **[webpack-lighthouse-plugin](https://github.com/addyosmani/webpack-lighthouse-plugin)** - Run Lighthouse from a Webpack build.
 * **[is-website-vulnerable](https://github.com/lirantal/is-website-vulnerable)** - An open source Node.js CLI tool that finds publicly known security vulnerabilities in a website's frontend JavaScript libraries.
+* **[cypress-audit](https://github.com/mfrachet/cypress-audit)** - Run Lighthouse and Pa11y audits directly in your E2E test suites.
 
 ## FAQ
 

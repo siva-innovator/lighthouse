@@ -95,18 +95,21 @@ describe('LegacyJavaScript audit', () => {
     expect(result.items).toHaveLength(1);
     expect(result.items[0]).toMatchInlineSnapshot(`
       Object {
-        "locations": Array [
-          Object {
-            "column": 0,
-            "line": 0,
-            "type": "source-location",
-            "url": "https://www.googletagmanager.com/a.js",
-            "urlProvider": "network",
-          },
-        ],
-        "signals": Array [
-          "String.prototype.repeat",
-        ],
+        "subItems": Object {
+          "items": Array [
+            Object {
+              "location": Object {
+                "column": 0,
+                "line": 0,
+                "type": "source-location",
+                "url": "https://www.googletagmanager.com/a.js",
+                "urlProvider": "network",
+              },
+              "signal": "String.prototype.repeat",
+            },
+          ],
+          "type": "subitems",
+        },
         "totalBytes": 0,
         "url": "https://www.googletagmanager.com/a.js",
         "wastedBytes": 20044,
@@ -123,7 +126,7 @@ describe('LegacyJavaScript audit', () => {
       },
     ]);
     expect(result.items).toHaveLength(1);
-    expect(result.items[0].signals).toEqual(['String.prototype.repeat']);
+    expect(result.items[0].subItems.items[0].signal).toEqual('String.prototype.repeat');
     expect(result.wastedBytesByUrl).toMatchInlineSnapshot(`
       Map {
         "https://www.example.com/a.js" => 20044,
@@ -139,9 +142,9 @@ describe('LegacyJavaScript audit', () => {
       },
     ]);
     expect(result.items).toHaveLength(1);
-    expect(result.items[0].signals).toEqual([
-      'String.prototype.repeat',
-      'String.prototype.includes',
+    expect(result.items[0].subItems.items).toMatchObject([
+      {signal: 'String.prototype.repeat'},
+      {signal: 'String.prototype.includes'},
     ]);
   });
 
@@ -216,8 +219,12 @@ describe('LegacyJavaScript audit', () => {
     const result = await getResult([script]);
 
     expect(result.items).toHaveLength(1);
-    expect(result.items[0].signals).toEqual(['String.prototype.repeat']);
-    expect(result.items[0].locations).toMatchObject([{line: 0, column: 0}]);
+    expect(result.items[0].subItems.items).toMatchObject([
+      {
+        signal: 'String.prototype.repeat',
+        location: {line: 0, column: 0},
+      },
+    ]);
   });
 
   it('uses location from pattern matching over source map', async () => {
@@ -233,8 +240,12 @@ describe('LegacyJavaScript audit', () => {
     const result = await getResult([script]);
 
     expect(result.items).toHaveLength(1);
-    expect(result.items[0].signals).toEqual(['String.prototype.repeat']);
-    expect(result.items[0].locations).toMatchObject([{line: 1, column: 0}]);
+    expect(result.items[0].subItems.items).toMatchObject([
+      {
+        signal: 'String.prototype.repeat',
+        location: {line: 1, column: 0},
+      },
+    ]);
   });
 });
 

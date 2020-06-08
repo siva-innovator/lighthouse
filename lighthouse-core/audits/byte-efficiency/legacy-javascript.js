@@ -23,7 +23,7 @@ const thirdPartyWeb = require('../../lib/third-party-web.js');
 
 const UIStrings = {
   /** Title of a Lighthouse audit that tells the user about legacy polyfills and transforms used on the page. This is displayed in a list of audit titles that Lighthouse generates. */
-  title: 'Legacy JavaScript',
+  title: 'Avoid serving legacy JavaScript to modern browsers',
   // eslint-disable-next-line max-len
   // TODO: web.dev article. this codelab is good starting place: https://web.dev/codelab-serve-modern-code/
   /** Description of a Lighthouse audit that tells the user about old JavaScript that is no longer needed. This is displayed after a user expands the section to see more. No character length limits. 'Learn More' becomes link text to additional documentation. */
@@ -408,7 +408,8 @@ class LegacyJavascript extends ByteEfficiencyAudit {
      * @typedef {LH.Audit.ByteEfficiencyItem & {signals: string[], locations: LH.Audit.Details.SourceLocationValue[]}} Item
      */
 
-    /** @type {Item[]} */
+    /** @typedef {{signal: string, location: LH.Audit.Details.SourceLocationValue}} SubItem */
+    /** @type {Array<LH.Audit.ByteEfficiencyItem & {subItems: LH.Audit.Details.TableSubItems}>} */
     const items = [];
 
     // TODO(cjamcl): Use SourceMaps, and only pattern match if maps are not available.
@@ -422,34 +423,40 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     urlToMatchResults.forEach((matches, url) => {
       const wastedBytes = this.estimateWastedBytes(matches);
       /** @type {typeof items[number]} */
-      const row = {
+      const item = {
         url,
-        signals: [],
-        locations: [],
         wastedBytes,
+        subItems: {
+          type: 'subitems',
+          items: [],
+        },
         // Not needed, but keeps typescript happy.
         totalBytes: 0,
       };
       for (const match of matches) {
         const {name, line, column} = match;
-        row.signals.push(name);
-        row.locations.push({
-          type: 'source-location',
-          url,
-          line,
-          column,
-          urlProvider: 'network',
-        });
+        /** @type {SubItem} */
+        const subItem = {
+          signal: name,
+          location: {
+            type: 'source-location',
+            url,
+            line,
+            column,
+            urlProvider: 'network',
+          },
+        };
+        item.subItems.items.push(subItem);
       }
-      items.push(row);
+      items.push(item);
     });
 
     /** @type {Map<string, number>} */
     const wastedBytesByUrl = new Map();
-    for (const row of items) {
+    for (const item of items) {
       // Only estimate savings if first party code has legacy code.
-      if (thirdPartyWeb.isFirstParty(row.url, mainDocumentEntity)) {
-        wastedBytesByUrl.set(row.url, row.wastedBytes);
+      if (thirdPartyWeb.isFirstParty(item.url, mainDocumentEntity)) {
+        wastedBytesByUrl.set(item.url, item.wastedBytes);
       }
     }
     await this.convertResourceBytesToTransferBytes(artifacts, networkRecords, wastedBytesByUrl);
@@ -457,8 +464,8 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     /** @type {LH.Audit.Details.OpportunityColumnHeading[]} */
     const headings = [
       /* eslint-disable max-len */
-      {key: 'url', valueType: 'url', subRows: {key: 'locations', valueType: 'source-location'}, label: str_(i18n.UIStrings.columnURL)},
-      {key: null, valueType: 'code', subRows: {key: 'signals'}, label: ''},
+      {key: 'url', valueType: 'url', subHeading: {key: 'locations', valueType: 'source-location'}, label: str_(i18n.UIStrings.columnURL)},
+      {key: null, valueType: 'code', subHeading: {key: 'signals'}, label: ''},
       {key: 'wastedBytes', valueType: 'bytes', granularity: 0.05, label: str_(i18n.UIStrings.columnWastedBytes)},
       /* eslint-enable max-len */
     ];

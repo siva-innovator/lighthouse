@@ -404,10 +404,6 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     const mainDocumentEntity = thirdPartyWeb.getEntity(artifacts.URL.finalUrl);
     const bundles = await JsBundles.request(artifacts, context);
 
-    /**
-     * @typedef {LH.Audit.ByteEfficiencyItem & {signals: string[], locations: LH.Audit.Details.SourceLocationValue[]}} Item
-     */
-
     /** @typedef {{signal: string, location: LH.Audit.Details.SourceLocationValue}} SubItem */
     /** @type {Array<LH.Audit.ByteEfficiencyItem & {subItems: LH.Audit.Details.TableSubItems}>} */
     const items = [];
@@ -464,8 +460,8 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     /** @type {LH.Audit.Details.OpportunityColumnHeading[]} */
     const headings = [
       /* eslint-disable max-len */
-      {key: 'url', valueType: 'url', subHeading: {key: 'locations', valueType: 'source-location'}, label: str_(i18n.UIStrings.columnURL)},
-      {key: null, valueType: 'code', subHeading: {key: 'signals'}, label: ''},
+      {key: 'url', valueType: 'url', subHeading: {key: 'location', valueType: 'source-location'}, label: str_(i18n.UIStrings.columnURL)},
+      {key: null, valueType: 'code', subHeading: {key: 'signal'}, label: ''},
       {key: 'wastedBytes', valueType: 'bytes', granularity: 0.05, label: str_(i18n.UIStrings.columnWastedBytes)},
       /* eslint-enable max-len */
     ];

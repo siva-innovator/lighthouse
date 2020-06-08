@@ -47,6 +47,10 @@ function sum(arr) {
   return arr.reduce((acc, cur) => acc + cur, 0);
 }
 
+/**
+ * Computes a mapping of polyfill names to their list of dependencies.
+ * @return {Map<string, string[]>}
+ */
 function getPolyfillDependencies() {
   /** @type {Map<string, string[]>} */
   const polyfillDependencies = new Map();

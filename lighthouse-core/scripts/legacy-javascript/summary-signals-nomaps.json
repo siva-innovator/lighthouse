@@ -1,5 +1,5 @@
 {
-  "totalSignals": 448,
+  "totalSignals": 449,
   "variantsMissingSignals": [
     "core-js-2-only-polyfill/es6-array-filter",
     "core-js-2-only-polyfill/es6-array-map",
@@ -695,6 +695,10 @@
     },
     {
       "name": "only-plugin/-babel-plugin-transform-regenerator",
+      "signals": "@babel/plugin-transform-regenerator"
+    },
+    {
+      "name": "only-plugin/-babel-plugin-transform-regenerator-babel-transform-async-to-generator",
       "signals": "@babel/plugin-transform-regenerator"
     },
     {

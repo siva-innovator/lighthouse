@@ -132,7 +132,7 @@ function getLegacyJavascriptResults(code, map, {sourceMaps}) {
   const documentUrl = 'http://localhost/index.html'; // These URLs don't matter.
   const scriptUrl = 'https://localhost/main.bundle.min.js';
   const networkRecords = [
-    {url: documentUrl, requestId: '1000.1'},
+    {url: documentUrl, requestId: '1000.1', resourceType: /** @type {'Document'} */ ('Document')},
     {url: scriptUrl, requestId: '1000.2'},
   ];
   const devtoolsLogs = networkRecordsToDevtoolsLog(networkRecords);
@@ -216,13 +216,17 @@ function makeRequireCodeForPolyfill(module) {
 }
 
 async function main() {
-  for (const plugin of plugins) {
+  const pluginGroups = [
+    ...plugins.map(plugin => [plugin]),
+    ['@babel/plugin-transform-regenerator', '@babel/transform-async-to-generator'],
+  ];
+  for (const pluginGroup of pluginGroups) {
     await createVariant({
       group: 'only-plugin',
-      name: plugin,
+      name: pluginGroup.join('_'),
       code: mainCode,
       babelrc: {
-        plugins: [plugin],
+        plugins: pluginGroup,
       },
     });
   }

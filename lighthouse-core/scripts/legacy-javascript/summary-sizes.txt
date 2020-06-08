@@ -85,8 +85,8 @@ core-js-2-only-polyfill
    3504        es6-function-name/main.bundle.min.js
 
 core-js-2-preset-env-esmodules
-  2857         false/main.bundle.min.js
-  1352         true/main.bundle.min.js
+  3007         false/main.bundle.min.js
+  1390         true/main.bundle.min.js
 
 core-js-3-only-polyfill
   62423        es-typed-array-uint8-clamped-array/main.bundle.min.js
@@ -171,10 +171,11 @@ core-js-3-only-polyfill
    4488        es-function-name/main.bundle.min.js
 
 core-js-3-preset-env-esmodules
-  2857         false/main.bundle.min.js
-  1352         true/main.bundle.min.js
+  3007         false/main.bundle.min.js
+  1390         true/main.bundle.min.js
 
 only-plugin
-  1750         -babel-plugin-transform-spread/main.bundle.min.js
-   871         -babel-plugin-transform-regenerator/main.bundle.min.js
-   858         -babel-plugin-transform-classes/main.bundle.min.js
+  1787         -babel-plugin-transform-spread/main.bundle.min.js
+  1710         -babel-plugin-transform-regenerator-babel-transform-async-to-generator/main.bundle.min.js
+  1073         -babel-plugin-transform-regenerator/main.bundle.min.js
+   895         -babel-plugin-transform-classes/main.bundle.min.js

@@ -1,5 +1,5 @@
 {
-  "totalSignals": 489,
+  "totalSignals": 490,
   "variantsMissingSignals": [
     "core-js-2-preset-env-esmodules/true",
     "core-js-3-preset-env-esmodules/true"
@@ -675,6 +675,10 @@
     },
     {
       "name": "only-plugin/-babel-plugin-transform-regenerator",
+      "signals": "@babel/plugin-transform-regenerator"
+    },
+    {
+      "name": "only-plugin/-babel-plugin-transform-regenerator-babel-transform-async-to-generator",
       "signals": "@babel/plugin-transform-regenerator"
     },
     {

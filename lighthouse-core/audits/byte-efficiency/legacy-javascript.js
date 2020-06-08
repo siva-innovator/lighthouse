@@ -12,8 +12,8 @@
  * ./lighthouse-core/scripts/legacy-javascript - verification tool.
  */
 
-/** @typedef {{name: string, expression: string}} Pattern */
-/** @typedef {{name: string, line: number, column: number}} PatternMatchResult */
+/** @typedef {{name: string, expression: string, estimator?: (result: PatternMatchResult) => number}} Pattern */
+/** @typedef {{name: string, line: number, column: number, count: number}} PatternMatchResult */
 /** @typedef {import('./byte-efficiency-audit.js').ByteEfficiencyProduct} ByteEfficiencyProduct */
 
 const ByteEfficiencyAudit = require('./byte-efficiency-audit.js');
@@ -77,11 +77,9 @@ class CodePatternMatcher {
       }
       const pattern = this.patterns[patternExpressionMatches.findIndex(Boolean)];
 
-      // Don't report more than one instance of a pattern for this code.
-      // Would result in multiple matches for the same pattern, ex: if both '='
-      // and 'Object.defineProperty' are used conditionally based on feature detection.
-      // Would also result in many matches for transform patterns.
       if (seen.has(pattern)) {
+        const existingMatch = matches.find(m => m.name === pattern.name);
+        if (existingMatch) existingMatch.count += 1;
         continue;
       }
       seen.add(pattern);
@@ -90,6 +88,7 @@ class CodePatternMatcher {
         name: pattern.name,
         line,
         column: result.index - lineBeginsAtIndex,
+        count: 1,
       });
     }
 
@@ -291,6 +290,10 @@ class LegacyJavascript extends ByteEfficiencyAudit {
       {
         name: '@babel/plugin-transform-regenerator',
         expression: /regeneratorRuntime\.a?wrap/.source,
+        // Example of this transform: https://gist.github.com/connorjclark/af8bccfff377ac44efc104a79bc75da2
+        // `regeneratorRuntime.awrap` is generated for every usage of `await`, and adds ~80 bytes each.
+        // TODO: maybe check for `_context.next` instead?
+        estimator: result => result.count * 80,
       },
       {
         name: '@babel/plugin-transform-spread',
@@ -334,9 +337,9 @@ class LegacyJavascript extends ByteEfficiencyAudit {
 
           const mapping = bundle.map.mappings().find(m => m.sourceURL === source);
           if (mapping) {
-            matches.push({name, line: mapping.lineNumber, column: mapping.columnNumber});
+            matches.push({name, line: mapping.lineNumber, column: mapping.columnNumber, count: 1});
           } else {
-            matches.push({name, line: 0, column: 0});
+            matches.push({name, line: 0, column: 0, count: 1});
           }
         }
       }
@@ -353,22 +356,22 @@ class LegacyJavascript extends ByteEfficiencyAudit {
    * @return {number}
    */
   static estimateWastedBytes(matches) {
-    // Split up signals based on polyfill / transform. Only polyfills start with @.
-    const polyfillSignals = matches.filter(m => !m.name.startsWith('@')).map(m => m.name);
-    const transformSignals = matches.filter(m => m.name.startsWith('@')).map(m => m.name);
+    // Split up results based on polyfill / transform. Only polyfills start with @.
+    const polyfillResults = matches.filter(m => !m.name.startsWith('@'));
+    const transformResults = matches.filter(m => m.name.startsWith('@'));
 
     let estimatedWastedBytesFromPolyfills = 0;
     /** @type {import('../../scripts/legacy-javascript/create-polyfill-size-estimation.js').PolyfillSizeEstimator} */
     const graph = require('./polyfill-graph-data.json');
     const modulesSeen = new Set();
-    for (const polyfillSignal of polyfillSignals) {
-      const modules = graph.dependencies[polyfillSignal];
+    for (const result of polyfillResults) {
+      const modules = graph.dependencies[result.name];
       for (const module of modules) {
         modulesSeen.add(module);
       }
     }
 
-    if (polyfillSignals.length > 0) estimatedWastedBytesFromPolyfills += graph.baseSize;
+    if (polyfillResults.length > 0) estimatedWastedBytesFromPolyfills += graph.baseSize;
     estimatedWastedBytesFromPolyfills += [...modulesSeen].reduce((acc, moduleIndex) => {
       return acc + graph.moduleSizes[moduleIndex];
     }, 0);
@@ -376,8 +379,13 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     estimatedWastedBytesFromPolyfills =
       Math.min(estimatedWastedBytesFromPolyfills, graph.maxSize);
 
-    const estimatedWastedBytesFromTransforms = 0;
-    // TODO estimate transforms.
+    let estimatedWastedBytesFromTransforms = 0;
+
+    for (const result of transformResults) {
+      const pattern = this.getTransformPatterns().find(p => p.name === result.name);
+      if (!pattern || !pattern.estimator) continue;
+      estimatedWastedBytesFromTransforms += pattern.estimator(result);
+    }
 
     const estimatedWastedBytes =
       estimatedWastedBytesFromPolyfills + estimatedWastedBytesFromTransforms;

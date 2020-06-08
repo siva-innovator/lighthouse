@@ -439,8 +439,8 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     const wastedBytesByUrl = new Map();
     for (const row of items) {
       // Only estimate savings if first party code has legacy code.
-      if (!thirdPartyWeb.isFirstParty(row.url, mainDocumentEntity)) {
-        continue;
+      if (thirdPartyWeb.isFirstParty(row.url, mainDocumentEntity)) {
+        wastedBytesByUrl.set(row.url, row.wastedBytes);
       }
     }
     await this.convertWastedResourceBytesToTransferBytes(artifacts, networkRecords, wastedBytesByUrl);

@@ -5,7 +5,6 @@
  */
 'use strict';
 
-const assert = require('assert').strict;
 const LegacyJavascript = require('../../../audits/byte-efficiency/legacy-javascript.js');
 const networkRecordsToDevtoolsLog = require('../../network-records-to-devtools-log.js');
 
@@ -84,10 +83,9 @@ describe('LegacyJavaScript audit', () => {
       },
     ]);
     expect(result.items).toHaveLength(0);
-    // assert.equal(result.extendedInfo.signalCount, 0);
   });
 
-  it('passes code with a legacy polyfill in third party resource', async () => {
+  it('legacy polyfill in third party resource does not contribute to wasted bytes', async () => {
     const result = await getResult([
       {
         code: 'String.prototype.repeat = function() {}',
@@ -114,9 +112,10 @@ describe('LegacyJavaScript audit', () => {
         "wastedBytes": 20044,
       }
     `);
+    expect(result.wastedBytesByUrl).toMatchInlineSnapshot(`Map {}`);
   });
 
-  it('fails code with a legacy polyfill', async () => {
+  it('legacy polyfill in first party resource contributes to wasted bytes', async () => {
     const result = await getResult([
       {
         code: 'String.prototype.repeat = function() {}',
@@ -125,6 +124,12 @@ describe('LegacyJavaScript audit', () => {
     ]);
     expect(result.items).toHaveLength(1);
     expect(result.items[0].signals).toEqual(['String.prototype.repeat']);
+    console.log(result.wastedBytesByUrl);
+    expect(result.wastedBytesByUrl).toMatchInlineSnapshot(`
+      Map {
+        "https://www.example.com/a.js" => 20044,
+      }
+    `);
   });
 
   it('fails code with multiple legacy polyfills', async () => {
@@ -135,7 +140,10 @@ describe('LegacyJavaScript audit', () => {
       },
     ]);
     expect(result.items).toHaveLength(1);
-    expect(result.items[0].signals).toEqual(['String.prototype.repeat', 'String.prototype.includes']);
+    expect(result.items[0].signals).toEqual([
+      'String.prototype.repeat',
+      'String.prototype.includes',
+    ]);
   });
 
   it('counts multiple of the same polyfill from the same script only once', async () => {
@@ -157,10 +165,10 @@ describe('LegacyJavaScript audit', () => {
     const codeSnippets = [
       'String.prototype.repeat = function() {}',
       'String.prototype["repeat"] = function() {}',
-      'String.prototype[\'repeat\'] = function() {}',
+      "String.prototype['repeat'] = function() {}",
       'Object.defineProperty(String.prototype, "repeat", function() {})',
-      'Object.defineProperty(String.prototype, \'repeat\', function() {})',
-      'Object.defineProperty(window, \'WeakMap\', function() {})',
+      "Object.defineProperty(String.prototype, 'repeat', function() {})",
+      "Object.defineProperty(window, 'WeakMap', function() {})",
       '$export($export.S,"Object",{values:function values(t){return i(t)}})',
       'WeakMap = function() {}',
       'window.WeakMap = function() {}',

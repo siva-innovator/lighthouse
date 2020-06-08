@@ -444,7 +444,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
       items.push(row);
     });
 
-    // /** @type {Map<string, number>} */
+    /** @type {Map<string, number>} */
     const wastedBytesByUrl = new Map();
     for (const row of items) {
       // Only estimate savings if first party code has legacy code.

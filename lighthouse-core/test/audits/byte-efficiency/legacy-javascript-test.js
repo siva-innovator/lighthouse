@@ -124,7 +124,6 @@ describe('LegacyJavaScript audit', () => {
     ]);
     expect(result.items).toHaveLength(1);
     expect(result.items[0].signals).toEqual(['String.prototype.repeat']);
-    console.log(result.wastedBytesByUrl);
     expect(result.wastedBytesByUrl).toMatchInlineSnapshot(`
       Map {
         "https://www.example.com/a.js" => 20044,

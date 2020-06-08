@@ -400,7 +400,6 @@ class LegacyJavascript extends ByteEfficiencyAudit {
 
     /** @type {Item[]} */
     const items = [];
-    let signalCount = 0;
 
     // TODO(cjamcl): Use SourceMaps, and only pattern match if maps are not available.
     const matcher = new CodePatternMatcher([
@@ -433,7 +432,6 @@ class LegacyJavascript extends ByteEfficiencyAudit {
         });
       }
       items.push(row);
-      signalCount += row.signals.length;
     });
 
     // /** @type {Map<string, number>} */

@@ -239,11 +239,18 @@ async function main() {
     removeCoreJs();
     installCoreJs(coreJsVersion);
 
-    for (const esmodules of [true, false]) {
+    const moduleOptions = [
+      {esmodules: false},
+      // Output: https://gist.github.com/connorjclark/515d05094ffd1fc038894a77156bf226
+      // Has more polyfills than expected... https://github.com/babel/babel/issues/11700
+      {esmodules: true},
+      {esmodules: true, bugfixes: true},
+    ]
+    for (const {esmodules, bugfixes} of moduleOptions) {
       await createVariant({
         group: `core-js-${coreJsVersion}-preset-env-esmodules`,
-        name: String(esmodules),
-        code: mainCode,
+        name: String(esmodules) + (bugfixes ? '_and_bugfixes' : ''),
+        code: `require('core-js');\n${mainCode}`,
         babelrc: {
           presets: [
             [
@@ -252,6 +259,7 @@ async function main() {
                 targets: {esmodules},
                 useBuiltIns: 'entry',
                 corejs: coreJsVersion,
+                bugfixes,
               },
             ],
           ],

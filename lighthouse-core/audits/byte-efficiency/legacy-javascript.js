@@ -15,8 +15,8 @@
 /** @typedef {{name: string, expression: string, estimator?: (result: PatternMatchResult) => number}} Pattern */
 /** @typedef {{name: string, line: number, column: number, count: number}} PatternMatchResult */
 /** @typedef {import('./byte-efficiency-audit.js').ByteEfficiencyProduct} ByteEfficiencyProduct */
-/** @typedef {{signal: string, location: LH.Audit.Details.SourceLocationValue}} SubItem */
 /** @typedef {LH.Audit.ByteEfficiencyItem & {subItems: {type: 'subitems', items: SubItem[]}}} Item */
+/** @typedef {{signal: string, location: LH.Audit.Details.SourceLocationValue}} SubItem */
 
 const ByteEfficiencyAudit = require('./byte-efficiency-audit.js');
 const JsBundles = require('../../computed/js-bundles.js');

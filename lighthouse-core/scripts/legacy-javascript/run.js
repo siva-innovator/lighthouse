@@ -163,13 +163,17 @@ function makeSummary(legacyJavascriptFilename) {
   let totalSignals = 0;
   const variants = [];
   for (const dir of glob.sync('*/*', {cwd: VARIANT_DIR})) {
-    /** @type {Array<{signals: string[]}>} */
+    /** @type {import('../../audits/byte-efficiency/legacy-javascript.js').Item[]} */
     const legacyJavascriptItems = require(`${VARIANT_DIR}/${dir}/${legacyJavascriptFilename}`);
-    const signals = legacyJavascriptItems.reduce((acc, cur) => {
-      totalSignals += cur.signals.length;
-      return acc.concat(cur.signals);
-    }, /** @type {string[]} */ ([])).join(', ');
-    variants.push({name: dir, signals});
+
+    const signals = [];
+    for (const item of legacyJavascriptItems) {
+      for (const subItem of item.subItems.items) {
+        signals.push(subItem.signal);
+      }
+    }
+    totalSignals += signals.length;
+    variants.push({name: dir, signals: signals.join(', ')});
   }
   return {
     totalSignals,

@@ -15,6 +15,8 @@
 /** @typedef {{name: string, expression: string, estimator?: (result: PatternMatchResult) => number}} Pattern */
 /** @typedef {{name: string, line: number, column: number, count: number}} PatternMatchResult */
 /** @typedef {import('./byte-efficiency-audit.js').ByteEfficiencyProduct} ByteEfficiencyProduct */
+/** @typedef {{signal: string, location: LH.Audit.Details.SourceLocationValue}} SubItem */
+/** @typedef {LH.Audit.ByteEfficiencyItem & {subItems: {type: 'subitems', items: SubItem[]}}} Item */
 
 const ByteEfficiencyAudit = require('./byte-efficiency-audit.js');
 const JsBundles = require('../../computed/js-bundles.js');
@@ -404,8 +406,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     const mainDocumentEntity = thirdPartyWeb.getEntity(artifacts.URL.finalUrl);
     const bundles = await JsBundles.request(artifacts, context);
 
-    /** @typedef {{signal: string, location: LH.Audit.Details.SourceLocationValue}} SubItem */
-    /** @type {Array<LH.Audit.ByteEfficiencyItem & {subItems: LH.Audit.Details.TableSubItems}>} */
+    /** @type {Item[]} */
     const items = [];
 
     // TODO(cjamcl): Use SourceMaps, and only pattern match if maps are not available.

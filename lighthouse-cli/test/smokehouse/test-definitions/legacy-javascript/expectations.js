@@ -19,6 +19,7 @@ module.exports = [
             items: [
               {
                 url: 'http://localhost:10200/legacy-javascript.html',
+                wastedBytes: 22300,
                 subItems: {
                   items: [
                     {signal: 'String.prototype.includes'},
@@ -27,6 +28,7 @@ module.exports = [
               },
               {
                 url: 'http://localhost:10200/legacy-javascript.js',
+                wastedBytes: 1436,
                 subItems: {
                   items: [
                     {signal: '@babel/plugin-transform-classes'},

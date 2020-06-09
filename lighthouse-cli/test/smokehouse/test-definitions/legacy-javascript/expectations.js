@@ -18,20 +18,20 @@ module.exports = [
           details: {
             items: [
               {
+                url: 'http://localhost:10200/legacy-javascript.html',
+                subItems: {
+                  items: [
+                    {signal: 'String.prototype.includes'},
+                  ],
+                },
+              },
+              {
                 url: 'http://localhost:10200/legacy-javascript.js',
                 subItems: {
                   items: [
                     {signal: '@babel/plugin-transform-classes'},
                     {signal: '@babel/plugin-transform-regenerator'},
                     {signal: '@babel/plugin-transform-spread'},
-                  ],
-                },
-              },
-              {
-                url: 'http://localhost:10200/legacy-javascript.html',
-                subItems: {
-                  items: [
-                    {signal: 'String.prototype.includes'},
                   ],
                 },
               },

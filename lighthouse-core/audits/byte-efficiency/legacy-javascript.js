@@ -376,7 +376,6 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     /** @type {Item[]} */
     const items = [];
 
-    // TODO(cjamcl): Use SourceMaps, and only pattern match if maps are not available.
     const matcher = new CodePatternMatcher([
       ...this.getPolyfillPatterns(),
       ...this.getTransformPatterns(),

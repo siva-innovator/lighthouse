@@ -18,8 +18,8 @@ module.exports = [
           details: {
             items: [
               {
-                url: 'http://localhost:10200/legacy-javascript.html',
-                wastedBytes: 22300,
+                url: 'http://localhost:10200/legacy-javascript.js',
+                wastedBytes: 78130,
                 subItems: {
                   items: [
                     {signal: 'Array.prototype.fill'},
@@ -79,13 +79,10 @@ module.exports = [
                 },
               },
               {
-                url: 'http://localhost:10200/legacy-javascript.js',
-                wastedBytes: 1436,
+                url: 'http://localhost:10200/legacy-javascript.html',
                 subItems: {
                   items: [
-                    {signal: '@babel/plugin-transform-classes'},
-                    {signal: '@babel/plugin-transform-regenerator'},
-                    {signal: '@babel/plugin-transform-spread'},
+                    {signal: 'Array.prototype.findIndex'},
                   ],
                 },
               },

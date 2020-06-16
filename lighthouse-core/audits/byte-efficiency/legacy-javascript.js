@@ -337,6 +337,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     const modulesSeen = new Set();
     for (const result of polyfillResults) {
       const modules = graph.dependencies[result.name];
+      if (!modules) continue; // Shouldn't happen.
       for (const module of modules) {
         modulesSeen.add(module);
       }

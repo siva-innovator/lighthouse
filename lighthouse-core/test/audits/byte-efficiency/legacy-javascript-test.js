@@ -112,7 +112,7 @@ describe('LegacyJavaScript audit', () => {
         },
         "totalBytes": 0,
         "url": "https://www.googletagmanager.com/a.js",
-        "wastedBytes": 20044,
+        "wastedBytes": 20104,
       }
     `);
     expect(result.wastedBytesByUrl).toMatchInlineSnapshot(`Map {}`);
@@ -129,7 +129,7 @@ describe('LegacyJavaScript audit', () => {
     expect(result.items[0].subItems.items[0].signal).toEqual('String.prototype.repeat');
     expect(result.wastedBytesByUrl).toMatchInlineSnapshot(`
       Map {
-        "https://www.example.com/a.js" => 20044,
+        "https://www.example.com/a.js" => 20104,
       }
     `);
   });
@@ -144,7 +144,7 @@ describe('LegacyJavaScript audit', () => {
     expect(result.items).toHaveLength(1);
     expect(result.items[0].subItems.items).toMatchObject([
       {signal: 'String.prototype.repeat'},
-      {signal: 'String.prototype.includes'},
+      {signal: 'Array.prototype.includes'},
     ]);
   });
 
@@ -167,9 +167,9 @@ describe('LegacyJavaScript audit', () => {
     const codeSnippets = [
       'String.prototype.repeat = function() {}',
       'String.prototype["repeat"] = function() {}',
-      'String.prototype[\'repeat\'] = function() {}',
+      'String.prototype["repeat"] = function() {}',
       'Object.defineProperty(String.prototype, "repeat", function() {})',
-      'Object.defineProperty(String.prototype, \'repeat\', function() {})',
+      'Object.defineProperty(String.prototype, "repeat", function() {})',
       '$export($export.S,"Object",{values:function values(t){return i(t)}})',
       'String.raw = function() {}',
       // Currently are no polyfills that declare a class. Maybe in the future.

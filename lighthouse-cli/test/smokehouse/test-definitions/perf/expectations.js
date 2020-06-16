@@ -176,7 +176,7 @@ module.exports = [
           },
         },
         'layout-shift-elements': {
-          minChromeMajorVersion: 84,
+          _minChromeMajorVersion: 84,
           score: null,
           displayValue: '2 elements found',
           details: {

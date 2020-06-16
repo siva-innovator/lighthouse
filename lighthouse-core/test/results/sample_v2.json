@@ -13,11 +13,26 @@
   "audits": {
     "is-on-https": {
       "id": "is-on-https",
-      "title": "Uses HTTPS",
+      "title": "Does not use HTTPS",
       "description": "All sites should be protected with HTTPS, even ones that don't handle sensitive data. This includes avoiding [mixed content](https://developers.google.com/web/fundamentals/security/prevent-mixed-content/what-is-mixed-content), where some resources are loaded over HTTP despite the initial request being servedover HTTPS. HTTPS prevents intruders from tampering with or passively listening in on the communications between your app and your users, and is a prerequisite for HTTP/2 and many new web platform APIs. [Learn more](https://web.dev/is-on-https).",
-      "score": null,
-      "scoreDisplayMode": "error",
-      "errorMessage": "Required InspectorIssues gatherer did not run."
+      "score": 0,
+      "scoreDisplayMode": "binary",
+      "displayValue": "1 insecure request found",
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "url",
+            "itemType": "url",
+            "text": "Insecure URL"
+          }
+        ],
+        "items": [
+          {
+            "url": "http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"
+          }
+        ]
+      }
     },
     "redirects-http": {
       "id": "redirects-http",
@@ -4435,7 +4450,7 @@
         }
       ],
       "id": "best-practices",
-      "score": null
+      "score": 0.08
     },
     "seo": {
       "title": "SEO",
@@ -4609,7 +4624,7 @@
         }
       ],
       "id": "pwa",
-      "score": null
+      "score": 0.39
     }
   },
   "categoryGroups": {
@@ -4734,6 +4749,12 @@
       },
       {
         "startTime": 0,
+        "name": "lh:computed:NetworkRecords",
+        "duration": 100,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 0,
         "name": "lh:audit:redirects-http",
         "duration": 100,
         "entryType": "measure"
@@ -4777,12 +4798,6 @@
       {
         "startTime": 0,
         "name": "lh:computed:FirstContentfulPaint",
-        "duration": 100,
-        "entryType": "measure"
-      },
-      {
-        "startTime": 0,
-        "name": "lh:computed:NetworkRecords",
         "duration": 100,
         "entryType": "measure"
       },
@@ -5863,20 +5878,22 @@
       "warningHeader": "Warnings: "
     },
     "icuMessagePaths": {
-      "lighthouse-core/audits/is-on-https.js | title": [
+      "lighthouse-core/audits/is-on-https.js | failureTitle": [
         "audits[is-on-https].title"
       ],
       "lighthouse-core/audits/is-on-https.js | description": [
         "audits[is-on-https].description"
       ],
-      "lighthouse-core/lib/lh-error.js | missingRequiredArtifact": [
+      "lighthouse-core/audits/is-on-https.js | displayValue": [
         {
           "values": {
-            "errorCode": "MISSING_REQUIRED_ARTIFACT",
-            "artifactName": "InspectorIssues"
+            "itemCount": 1
           },
-          "path": "audits[is-on-https].errorMessage"
+          "path": "audits[is-on-https].displayValue"
         }
+      ],
+      "lighthouse-core/audits/is-on-https.js | columnInsecureURL": [
+        "audits[is-on-https].details.headings[0].text"
       ],
       "lighthouse-core/audits/redirects-http.js | failureTitle": [
         "audits[redirects-http].title"

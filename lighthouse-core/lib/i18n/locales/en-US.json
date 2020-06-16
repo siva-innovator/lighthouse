@@ -816,10 +816,10 @@
     "message": "Uses HTTPS"
   },
   "lighthouse-core/audits/is-on-https.js | upgraded": {
-    "message": "Upgraded"
+    "message": "Automatically Upgraded"
   },
   "lighthouse-core/audits/is-on-https.js | warning": {
-    "message": "Warning"
+    "message": "Warned"
   },
   "lighthouse-core/audits/largest-contentful-paint-element.js | description": {
     "message": "This is the element that was identified as the Largest Contentful Paint. [Learn More](https://web.dev/lighthouse-largest-contentful-paint)"

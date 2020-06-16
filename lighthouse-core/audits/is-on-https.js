@@ -35,9 +35,9 @@ const UIStrings = {
   /** Value for the resolution column in a data table; denotes that the insecure URL was blocked by the browser. */
   blocked: 'Blocked',
   /** Value for the resolution column in a data table; denotes that the insecure URL may be blocked by the browser in the future. */
-  warning: 'Warning',
+  warning: 'Warned',
   /** Value for the resolution column in a data table; denotes that the insecure URL was upgraded to a secure request by the browser. */
-  upgraded: 'Upgraded',
+  upgraded: 'Automatically Upgraded',
 };
 
 const str_ = i18n.createMessageInstanceIdFn(__filename, UIStrings);

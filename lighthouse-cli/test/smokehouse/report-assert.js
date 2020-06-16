@@ -124,6 +124,9 @@ function findDifference(path, actual, expected) {
   // We only care that all expected's own properties are on actual (and not the other way around).
   // Note an expected `undefined` can match an actual that is either `undefined` or not defined.
   for (const key of Object.keys(expected)) {
+    // Skip private fields (e.g. _chromeMajorVersion).
+    if (key.startsWith('_')) continue;
+
     // Bracket numbers, but property names requiring quotes will still be unquoted.
     const keyAccessor = /^\d+$/.test(key) ? `[${key}]` : `.${key}`;
     const keyPath = path + keyAccessor;

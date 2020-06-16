@@ -429,7 +429,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
       /* eslint-disable max-len */
       {key: 'url', valueType: 'url', subHeading: {key: 'location', valueType: 'source-location'}, label: str_(i18n.UIStrings.columnURL)},
       {key: null, valueType: 'code', subHeading: {key: 'signal'}, label: ''},
-      {key: 'wastedBytes', valueType: 'bytes', granularity: 0.05, label: str_(i18n.UIStrings.columnWastedBytes)},
+      {key: 'wastedBytes', valueType: 'bytes', label: str_(i18n.UIStrings.columnWastedBytes)},
       /* eslint-enable max-len */
     ];
 

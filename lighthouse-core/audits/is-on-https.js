@@ -30,6 +30,14 @@ const UIStrings = {
     }`,
   /** Label for a column in a data table; entries in the column will be the URLs of insecure (non-HTTPS) network requests. */
   columnInsecureURL: 'Insecure URL',
+  /** Label for a column in a data table; entries in the column will be how the browser handled insecure (non-HTTPS) network requests. */
+  columnResolution: 'Resolution',
+  /** Value for the resolution column in a data table; denotes that the insecure URL was blocked by the browser. */
+  blocked: 'Blocked',
+  /** Value for the resolution column in a data table; denotes that the insecure URL may be blocked by the browser in the future. */
+  warning: 'Warning',
+  /** Value for the resolution column in a data table; denotes that the insecure URL was upgraded to a secure request by the browser. */
+  upgraded: 'Upgraded',
 };
 
 const str_ = i18n.createMessageInstanceIdFn(__filename, UIStrings);
@@ -48,7 +56,7 @@ class HTTPS extends Audit {
       title: str_(UIStrings.title),
       failureTitle: str_(UIStrings.failureTitle),
       description: str_(UIStrings.description),
-      requiredArtifacts: ['devtoolsLogs'],
+      requiredArtifacts: ['devtoolsLogs', 'InspectorIssues'],
     };
   }
 
@@ -74,17 +82,41 @@ class HTTPS extends Audit {
           .filter(record => !HTTPS.isSecureRecord(record))
           .map(record => URL.elideDataURI(record.url));
 
+      /** @type {Array<{url: string, resolution?: string}>}  */
       const items = Array.from(new Set(insecureURLs)).map(url => ({url}));
-
-      let displayValue = '';
-      if (items.length > 0) {
-        displayValue = str_(UIStrings.displayValue, {itemCount: items.length});
-      }
 
       /** @type {LH.Audit.Details.Table['headings']} */
       const headings = [
         {key: 'url', itemType: 'url', text: str_(UIStrings.columnInsecureURL)},
       ];
+
+      // Mixed-content issues aren't emitted until M84.
+      if (artifacts.InspectorIssues.mixedContent.length) {
+        headings.push(
+          {key: 'resolution', itemType: 'text', text: str_(UIStrings.columnResolution)});
+        for (const details of artifacts.InspectorIssues.mixedContent) {
+          let item = items.find(item => item.url === details.insecureURL);
+          if (!item) {
+            item = {url: details.insecureURL};
+            items.push(item);
+          }
+
+          if (details.resolutionStatus === 'MixedContentAutomaticallyUpgraded') {
+            item.resolution = UIStrings.upgraded;
+          } else if (details.resolutionStatus === 'MixedContentBlocked') {
+            item.resolution = UIStrings.blocked;
+          } else if (details.resolutionStatus === 'MixedContentWarning') {
+            item.resolution = UIStrings.warning;
+          } else {
+            item.resolution = details.resolutionStatus;
+          }
+        }
+      }
+
+      let displayValue = '';
+      if (items.length > 0) {
+        displayValue = str_(UIStrings.displayValue, {itemCount: items.length});
+      }
 
       return {
         score: Number(items.length === 0),

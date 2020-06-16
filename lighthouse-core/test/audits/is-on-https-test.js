@@ -12,10 +12,11 @@ const networkRecordsToDevtoolsLog = require('../network-records-to-devtools-log.
 /* eslint-env jest */
 
 describe('Security: HTTPS audit', () => {
-  function getArtifacts(networkRecords) {
+  function getArtifacts(networkRecords, mixedContentIssues) {
     const devtoolsLog = networkRecordsToDevtoolsLog(networkRecords);
     return {
       devtoolsLogs: {[Audit.DEFAULT_PASS]: devtoolsLog},
+      InspectorIssues: {mixedContent: mixedContentIssues || []},
     };
   }
 
@@ -42,6 +43,7 @@ describe('Security: HTTPS audit', () => {
       assert.strictEqual(result.score, 0);
       expect(result.displayValue).toBeDisplayString('1 insecure request found');
       assert.deepEqual(result.extendedInfo.value[0], {url: 'http://insecure.com/image.jpeg'});
+      assert.strictEqual(result.details.headings.length, 1);
     });
   });
 
@@ -53,6 +55,24 @@ describe('Security: HTTPS audit', () => {
     ]), {computedCache: new Map()}).then(result => {
       assert.strictEqual(result.score, 1);
     });
+  });
+
+  it('augmented with mixed-content InspectorIssues', async () => {
+    const networkRecords = [
+      {url: 'https://google.com/', parsedURL: {scheme: 'https', host: 'google.com'}},
+      {url: 'http://localhost/image.jpeg', parsedURL: {scheme: 'http', host: 'localhost'}},
+      {url: 'https://google.com/', parsedURL: {scheme: 'https', host: 'google.com'}},
+    ];
+    const mixedContentIssues = [
+      {insecureURL: 'http://localhost/image.jpeg', resolutionStatus: 'MixedContentBlocked'},
+    ];
+    const artifacts = getArtifacts(networkRecords, mixedContentIssues);
+    const result = await Audit.audit(artifacts, {computedCache: new Map()});
+
+    expect(result.details.headings).toHaveLength(2);
+    expect(result.details.items[0]).toMatchObject({url: 'http://localhost/image.jpeg'});
+    expect(result.details.items[0].resolution).toBeDisplayString('Blocked');
+    expect(result.score).toBe(0);
   });
 
   describe('#isSecureRecord', () => {

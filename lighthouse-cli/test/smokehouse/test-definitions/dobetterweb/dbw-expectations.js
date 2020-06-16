@@ -416,7 +416,7 @@ const expectations = [
   {
     artifacts: {
       InspectorIssues: {
-        _chromeMajorVersion: 84,
+        minChromeMajorVersion: 84,
         mixedContent: [
           {
             resourceType: 'Image',

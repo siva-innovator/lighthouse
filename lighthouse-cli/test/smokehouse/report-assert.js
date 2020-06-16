@@ -166,8 +166,8 @@ function filterExpectations(lhr, expected) {
    * @param {*} obj
    */
   function failsChromeVersionCheck(obj) {
-    if (!obj._chromeMajorVersion) return false;
-    return obj._chromeMajorVersion < actualChromeVersion;
+    if (!obj.minChromeMajorVersion) return false;
+    return obj.minChromeMajorVersion < actualChromeVersion;
   }
 
   /**
@@ -179,7 +179,7 @@ function filterExpectations(lhr, expected) {
       else if (failsChromeVersionCheck(obj[key])) delete obj[key];
       else filter(obj[key]);
     }
-    delete obj._chromeMajorVersion;
+    delete obj.minChromeMajorVersion;
   }
 
   filter(expected);

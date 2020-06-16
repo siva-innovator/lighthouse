@@ -167,7 +167,7 @@ function filterExpectations(lhr, expected) {
    */
   function failsChromeVersionCheck(obj) {
     if (!obj.minChromeMajorVersion) return false;
-    return obj.minChromeMajorVersion < actualChromeVersion;
+    return actualChromeVersion < obj.minChromeMajorVersion;
   }
 
   /**

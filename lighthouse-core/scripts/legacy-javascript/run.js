@@ -242,10 +242,9 @@ async function main() {
     const moduleOptions = [
       {esmodules: false},
       // Output: https://gist.github.com/connorjclark/515d05094ffd1fc038894a77156bf226
-      // Has more polyfills than expected... https://github.com/babel/babel/issues/11700
       {esmodules: true},
       {esmodules: true, bugfixes: true},
-    ]
+    ];
     for (const {esmodules, bugfixes} of moduleOptions) {
       await createVariant({
         group: `core-js-${coreJsVersion}-preset-env-esmodules`,

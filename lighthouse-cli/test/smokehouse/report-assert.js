@@ -35,17 +35,6 @@ const NUMERICAL_EXPECTATION_REGEXP =
  * @property {Difference|null} [diff]
  */
 
-let _currentLhr = /** @type {LH.Result} */({});
-/**
- * @param {LH.Result} lhr
- */
-function setCurrentLhr(lhr) {
-  _currentLhr = lhr;
-}
-function getCurrentLhr() {
-  return _currentLhr;
-}
-
 /**
  * Checks if the actual value matches the expectation. Does not recursively search. This supports
  *    - Greater than/less than operators, e.g. "<100", ">90"
@@ -58,15 +47,6 @@ function getCurrentLhr() {
  * @return {boolean}
  */
 function matchesExpectation(actual, expected) {
-  // Skip if not using the minimum necessary Chrome.
-  if (expected && expected._chromeMajorVersion) {
-    const userAgent = getCurrentLhr().userAgent;
-    const userAgentMatch = /Chrome\/(\d+)/.exec(userAgent); // Chrome/85.0.4174.0
-    if (!userAgentMatch) throw new Error('Could not get chrome version.');
-    const actualChromeVersion = Number(userAgentMatch[1]);
-    if (expected._chromeMajorVersion < actualChromeVersion) return true;
-  }
-
   if (typeof actual === 'number' && NUMERICAL_EXPECTATION_REGEXP.test(expected)) {
     const parts = expected.match(NUMERICAL_EXPECTATION_REGEXP);
     const [, prefixNumber, operator, postfixNumber] = parts;
@@ -124,9 +104,6 @@ function findDifference(path, actual, expected) {
   // We only care that all expected's own properties are on actual (and not the other way around).
   // Note an expected `undefined` can match an actual that is either `undefined` or not defined.
   for (const key of Object.keys(expected)) {
-    // Skip private fields (e.g. _chromeMajorVersion).
-    if (key.startsWith('_')) continue;
-
     // Bracket numbers, but property names requiring quotes will still be unquoted.
     const keyAccessor = /^\d+$/.test(key) ? `[${key}]` : `.${key}`;
     const keyPath = path + keyAccessor;
@@ -176,12 +153,48 @@ function makeComparison(name, actualResult, expectedResult) {
 
 /**
  * Collate results into comparisons of actual and expected scores on each audit/artifact.
+ * @param {LH.Result} lhr
+ * @param {Smokehouse.ExpectedRunnerResult} expected
+ */
+function filterExpectations(lhr, expected) {
+  const userAgent = lhr.userAgent;
+  const userAgentMatch = /Chrome\/(\d+)/.exec(userAgent); // Chrome/85.0.4174.0
+  if (!userAgentMatch) throw new Error('Could not get chrome version.');
+  const actualChromeVersion = Number(userAgentMatch[1]);
+
+  /**
+   * @param {*} obj
+   */
+  function failsChromeVersionCheck(obj) {
+    if (!obj._chromeMajorVersion) return false;
+    return obj._chromeMajorVersion < actualChromeVersion;
+  }
+
+  /**
+   * @param {*} obj
+   */
+  function filter(obj) {
+    for (const key of Object.keys(obj)) {
+      if (!obj[key] || typeof obj !== 'object') continue;
+      else if (failsChromeVersionCheck(obj[key])) delete obj[key];
+      else filter(obj[key]);
+    }
+    delete obj._chromeMajorVersion;
+  }
+
+  filter(expected);
+}
+
+/**
+ * Collate results into comparisons of actual and expected scores on each audit/artifact.
  * @param {LocalConsole} localConsole
- * @param {Smokehouse.ExpectedRunnerResult} actual
+ * @param {{lhr: LH.Result, artifacts: LH.Artifacts}} actual
  * @param {Smokehouse.ExpectedRunnerResult} expected
  * @return {Comparison[]}
  */
 function collateResults(localConsole, actual, expected) {
+  filterExpectations(actual.lhr, expected);
+
   // If actual run had a runtimeError, expected *must* have a runtimeError.
   // Relies on the fact that an `undefined` argument to makeComparison() can only match `undefined`.
   const runtimeErrorAssertion = makeComparison('runtimeError', actual.lhr.runtimeError,
@@ -308,7 +321,6 @@ function assertLogString(count) {
  */
 function report(actual, expected, reportOptions = {}) {
   const localConsole = new LocalConsole();
-  setCurrentLhr(actual.lhr);
 
   const comparisons = collateResults(localConsole, actual, expected);
 

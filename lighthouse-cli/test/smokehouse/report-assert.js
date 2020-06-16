@@ -152,7 +152,7 @@ function makeComparison(name, actualResult, expectedResult) {
 }
 
 /**
- * Collate results into comparisons of actual and expected scores on each audit/artifact.
+ * Delete expectations that don't match environment criteria.
  * @param {LH.Result} lhr
  * @param {Smokehouse.ExpectedRunnerResult} expected
  */

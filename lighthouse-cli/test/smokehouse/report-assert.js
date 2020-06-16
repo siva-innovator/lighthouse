@@ -35,6 +35,17 @@ const NUMERICAL_EXPECTATION_REGEXP =
  * @property {Difference|null} [diff]
  */
 
+let _currentLhr = /** @type {LH.Result} */({});
+/**
+ * @param {LH.Result} lhr
+ */
+function setCurrentLhr(lhr) {
+  _currentLhr = lhr;
+}
+function getCurrentLhr() {
+  return _currentLhr;
+}
+
 /**
  * Checks if the actual value matches the expectation. Does not recursively search. This supports
  *    - Greater than/less than operators, e.g. "<100", ">90"
@@ -47,6 +58,15 @@ const NUMERICAL_EXPECTATION_REGEXP =
  * @return {boolean}
  */
 function matchesExpectation(actual, expected) {
+  // Skip if not using the minimum necessary Chrome.
+  if (expected && expected._chromeMajorVersion) {
+    const userAgent = getCurrentLhr().userAgent;
+    const userAgentMatch = /Chrome\/(\d+)/.exec(userAgent); // Chrome/85.0.4174.0
+    if (!userAgentMatch) throw new Error('Could not get chrome version.');
+    const actualChromeVersion = Number(userAgentMatch[1]);
+    if (expected._chromeMajorVersion < actualChromeVersion) return true;
+  }
+
   if (typeof actual === 'number' && NUMERICAL_EXPECTATION_REGEXP.test(expected)) {
     const parts = expected.match(NUMERICAL_EXPECTATION_REGEXP);
     const [, prefixNumber, operator, postfixNumber] = parts;
@@ -285,6 +305,7 @@ function assertLogString(count) {
  */
 function report(actual, expected, reportOptions = {}) {
   const localConsole = new LocalConsole();
+  setCurrentLhr(actual.lhr);
 
   const comparisons = collateResults(localConsole, actual, expected);
 

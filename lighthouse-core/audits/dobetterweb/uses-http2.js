@@ -14,7 +14,7 @@
 /** @typedef {import('../../lib/dependency-graph/base-node.js').Node} Node */
 
 const Audit = require('../audit.js');
-const ThirdPartyAudit = require('../third-party-summary.js');
+const ThirdParty = require('../../lib/third-party-web.js');
 const ByteEfficiencyAudit = require('../byte-efficiency/byte-efficiency-audit.js');
 const Interactive = require('../../computed/metrics/lantern-interactive.js');
 const NetworkRequest = require('../../lib/network-request.js');
@@ -126,7 +126,7 @@ class UsesHTTP2Audit extends Audit {
     // Resources from third-parties that are less than 100 bytes are usually tracking pixels, not actual resources.
     // They can masquerade as static types though (gifs, documents, etc)
     if (networkRequest.resourceSize < 100) {
-      const entity = ThirdPartyAudit.getEntitySafe(networkRequest.url);
+      const entity = ThirdParty.getEntity(networkRequest.url);
       if (entity) return false;
     }
 

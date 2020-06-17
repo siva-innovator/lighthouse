@@ -25,7 +25,7 @@ const i18n = require('../../lib/i18n/i18n.js');
 
 const UIStrings = {
   /** Imperative title of a Lighthouse audit that tells the user to enable HTTP/2. This is displayed in a list of audit titles that Lighthouse generates. */
-  title: 'Leverage HTTP/2',
+  title: 'Use HTTP/2',
   /** Description of a Lighthouse audit that tells the user why they should use HTTP/2. This is displayed after a user expands the section to see more. No character length limits. 'Learn More' becomes link text to additional documentation. */
   description: 'HTTP/2 offers many benefits over HTTP/1.1, including binary headers, ' +
       'multiplexing, and server push. [Learn more](https://web.dev/uses-http2).',
@@ -138,7 +138,7 @@ class UsesHTTP2Audit extends Audit {
    * We're a little conservative about what we surface for a few reasons:
    *
    *    - The simulator approximation of HTTP/2 is a little more generous than reality.
-   *    - There's a bit of debate surrounding HTTP/2 due to its worse performance in environments with high packet loss.
+   *    - There's a bit of debate surrounding HTTP/2 due to its worse performance in environments with high packet loss.**
    *    - It's something that you'd have absolutely zero control over with a third-party (can't defer to fix it for example).
    *
    * Therefore, we only surface requests that were...
@@ -146,6 +146,10 @@ class UsesHTTP2Audit extends Audit {
    *    - Served over HTTP/1.1 or earlier
    *    - Served over an origin that serves at least 6 static asset requests
    *      (if there aren't more requests than browser's max/host, multiplexing isn't as big a deal)
+   *
+   * ** = https://news.ycombinator.com/item?id=19086639
+   *      https://www.twilio.com/blog/2017/10/http2-issues.html
+   *      https://www.cachefly.com/http-2-is-not-a-magic-bullet/
    *
    * @param {Array<LH.Artifacts.NetworkRequest>} networkRecords
    * @return {Array<{url: string, protocol: string}>}
@@ -166,15 +170,15 @@ class UsesHTTP2Audit extends Audit {
     }
 
     for (const record of networkRecords) {
-      // skip duplicates
+      // Skip duplicates.
       if (seenURLs.has(record.url)) continue;
-      // check if record is not served through the service worker, servicer worker uses http/1.1 as a protocol
-      // these can generate false positives (bug: https://github.com/GoogleChrome/lighthouse/issues/7158)
+      // Check if record is not served through the service worker, servicer worker uses http/1.1 as a protocol.
+      // These can generate false positives (bug: https://github.com/GoogleChrome/lighthouse/issues/7158).
       if (record.fetchedViaServiceWorker) continue;
-      // test the protocol to see if it was http/1.1
+      // Test the protocol to see if it was http/1.1.
       const isOldHttp = /HTTP\/[01][.\d]?/i.test(record.protocol);
       if (!isOldHttp) continue;
-      // check if the origin has enough requests to bother flagging
+      // Check if the origin has enough requests to bother flagging.
       const group = groupedByOrigin.get(record.parsedURL.securityOrigin) || [];
       if (group.length < 6) continue;
 

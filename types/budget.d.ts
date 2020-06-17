@@ -31,7 +31,7 @@ declare global {
       export interface ResourceBudget {
         /** The resource type that a budget applies to. */
         resourceType: ResourceType;
-        /** Budget for resource. Depending on context, this is either the count or size (KB) of a resource. */
+        /** Budget for resource. Depending on context, this is either the count or size (KiB) of a resource. */
         budget: number;
       }
 
@@ -53,7 +53,7 @@ declare global {
       }
 
       /** Supported timing metrics. */
-      export type TimingMetric = 'first-contentful-paint' | 'first-cpu-idle' | 'interactive' | 'first-meaningful-paint' | 'max-potential-fid' | 'estimated-input-latency' | 'total-blocking-time' | 'speed-index';
+      export type TimingMetric = 'first-contentful-paint' | 'first-cpu-idle' | 'interactive' | 'first-meaningful-paint' | 'max-potential-fid' | 'estimated-input-latency' | 'total-blocking-time' | 'speed-index' | 'largest-contentful-paint' | 'cumulative-layout-shift';
 
       /** Supported values for the resourceType property of a ResourceBudget. */
       export type ResourceType = 'stylesheet' | 'image' | 'media' | 'font' | 'script' | 'document' | 'other' | 'total' | 'third-party';

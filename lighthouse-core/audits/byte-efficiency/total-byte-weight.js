@@ -19,8 +19,8 @@ const UIStrings = {
   'Large network payloads cost users real money and are highly correlated with ' +
   'long load times. [Learn ' +
   'more](https://web.dev/total-byte-weight).',
-  /** Used to summarize the total byte size of the page and all its network requests. The `{totalBytes}` placeholder will be replaced with the total byte sizes, shown in kilobytes (e.g. 142 KB) */
-  displayValue: 'Total size was {totalBytes, number, bytes}\xa0KB',
+  /** Used to summarize the total byte size of the page and all its network requests. The `{totalBytes}` placeholder will be replaced with the total byte sizes, shown in kibibytes (e.g. 142 KiB) */
+  displayValue: 'Total size was {totalBytes, number, bytes}\xa0KiB',
 };
 
 const str_ = i18n.createMessageInstanceIdFn(__filename, UIStrings);
@@ -45,10 +45,11 @@ class TotalByteWeight extends ByteEfficiencyAudit {
    */
   static get defaultOptions() {
     return {
-      // see https://www.desmos.com/calculator/gpmjeykbwr
-      // ~75th and ~90th percentiles http://httparchive.org/interesting.php?a=All&l=Feb%201%202017&s=All#bytesTotal
-      scorePODR: 2500 * 1024,
-      scoreMedian: 4000 * 1024,
+      // see https://www.desmos.com/calculator/h7kfv68jre
+      // ~25th and ~10th percentiles, with resulting p10 computed.
+      // http://httparchive.org/interesting.php?a=All&l=Feb%201%202017&s=All#bytesTotal
+      p10: 2667 * 1024,
+      median: 4000 * 1024,
     };
   }
 
@@ -84,9 +85,8 @@ class TotalByteWeight extends ByteEfficiencyAudit {
     }).slice(0, 10);
 
     const score = ByteEfficiencyAudit.computeLogNormalScore(
-      totalBytes,
-      context.options.scorePODR,
-      context.options.scoreMedian
+      {p10: context.options.p10, median: context.options.median},
+      totalBytes
     );
 
     /** @type {LH.Audit.Details.Table['headings']} */

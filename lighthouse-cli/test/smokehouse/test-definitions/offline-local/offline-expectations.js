@@ -32,12 +32,6 @@ module.exports = [
         'render-blocking-resources': {
           score: 1,
         },
-        'no-document-write': {
-          score: 1,
-        },
-        'uses-passive-event-listeners': {
-          score: 1,
-        },
         'password-inputs-can-be-pasted-into': {
           score: 1,
         },

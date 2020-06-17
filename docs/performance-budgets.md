@@ -97,10 +97,12 @@ Supported timing metrics:
 - `estimated-input-latency`
 - `total-blocking-time`
 - `speed-index`
+- `largest-contentful-paint`
+- `cumulative-layout-shift`
 
 ### Resource Budgets
 
-Use the optional `resourceSizes` property to define budgets for the *size* of page resources. In this context, budgets are defined in kilobytes.
+Use the optional `resourceSizes` property to define budgets for the *size* of page resources. In this context, budgets are defined in kibibytes (1 KiB = 1024 bytes).
 
 ```json
 "resourceSizes": [

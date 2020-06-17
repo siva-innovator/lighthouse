@@ -123,6 +123,14 @@ function getOuterHTMLSnippet(element, ignoreAttrs = []) {
     ignoreAttrs.forEach(attribute =>{
       clone.removeAttribute(attribute);
     });
+    for (const attributeName of clone.getAttributeNames()) {
+      let attributeValue = clone.getAttribute(attributeName);
+      if (attributeValue.length > 100) {
+        attributeValue = attributeValue.slice(0, 97) + '...';
+        clone.setAttribute(attributeName, attributeValue);
+      }
+    }
+
     const reOpeningTag = /^[\s\S]*?>/;
     const match = clone.outerHTML.match(reOpeningTag);
     return (match && match[0]) || '';

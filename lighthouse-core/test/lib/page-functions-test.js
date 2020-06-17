@@ -61,6 +61,14 @@ describe('Page Functions', () => {
       assert.equal(pageFunctions.getOuterHTMLSnippet(
         dom.createElement('div', '', {style: 'style1\nstyle2'})), '<div style="style1\nstyle2">');
     });
+
+    it('truncates attribute values that are too long',  () => {
+      const longClass = 'a'.repeat(200);
+      const truncatedExpectation = 'a'.repeat(97) + '...';
+      assert.equal(pageFunctions.getOuterHTMLSnippet(
+        dom.createElement('div', '', {class: longClass})), `<div class="${truncatedExpectation}">`
+      );
+    });
   });
 
   describe('getNodeSelector', () => {

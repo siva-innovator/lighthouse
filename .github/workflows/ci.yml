@@ -8,11 +8,7 @@ on: [pull_request]
 
 jobs:
   ci:
-
     runs-on: ubuntu-latest
-    strategy:
-      # e.g. if lint fails, continue to the unit tests anyway
-      fail-fast: false
 
     steps:
     - name: git clone
@@ -23,7 +19,7 @@ jobs:
       with:
         node-version: 10.x
 
-    - name: Setup protoc
+    - name: Set up protoc
       uses: arduino/setup-protoc@7ad700d
       with:
         version: '3.7.1'
@@ -38,19 +34,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install protobuf==3.7.1
 
-    # Cache yarn deps. thx https://github.com/actions/cache/blob/master/examples.md#node---yarn
-    - name: Get yarn cache directory path
-      id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
-    - name: Set up node_modules cache
-      uses: actions/cache@v1
-      id: yarn-cache
-      with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
-
     - run: yarn --frozen-lockfile
     - run: yarn build-all
     - run: yarn diff:sample-json
@@ -60,16 +43,25 @@ jobs:
 
     # Run tests that require headfull Chrome.
     - run: sudo apt-get install xvfb
-    - run: xvfb-run --auto-servernum yarn unit
-    - run: xvfb-run --auto-servernum yarn test-clients
-    - run: xvfb-run --auto-servernum yarn smoke --debug -j=1 --retries=2
-    - run: xvfb-run --auto-servernum yarn test-bundle
-    - run: xvfb-run --auto-servernum yarn test-docs
+    - name: yarn unit
+      run: xvfb-run --auto-servernum yarn unit
+    - name: yarn test-clients
+      run: xvfb-run --auto-servernum yarn test-clients
+    - name: yarn test-bundle
+      run: xvfb-run --auto-servernum yarn test-bundle
+    - name: yarn test-docs
+      run: xvfb-run --auto-servernum yarn test-docs
 
     - run: yarn test-lantern
     - run: yarn test-legacy-javascript
     - run: yarn i18n:checks
     - run: yarn dogfood-lhci
+
+    - name: Upload dist/
+      uses: actions/upload-artifact@v2
+      with:
+        name: dist
+        path: dist/
 
     # buildtracker runs `git merge-base HEAD origin/master` which needs more history than depth=1. https://github.com/paularmstrong/build-tracker/issues/106
     - name: Deepen git fetch (for buildtracker)
@@ -83,3 +75,28 @@ jobs:
 
     # Fail if any changes were written to source files (ex, from: build/build-cdt-lib.js).
     - run: git diff --exit-code
+
+  smoke:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        invert: [false, true]
+      # e.g. if smoke 0 fails, continue with smoke 1 anyway
+      fail-fast: false
+    env:
+      # The smokehouse tests run by job smoke 0. smoke-1 will run the rest.
+      SMOKE_GROUP_1: a11y oopif pwa pwa2 pwa3 dbw redirects errors offline
+    name: smoke ${{ strategy.job-index }}
+
+    steps:
+    - name: git clone
+      uses: actions/checkout@v2
+  
+    - name: Use Node.js 10.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10.x
+
+    - run: yarn --frozen-lockfile
+    - name: Run smoke tests
+      run: xvfb-run --auto-servernum yarn smoke --debug -j=1 --retries=2 --invert ${{ matrix.invert }} $SMOKE_GROUP_1

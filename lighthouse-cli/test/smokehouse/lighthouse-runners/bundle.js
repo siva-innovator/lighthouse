@@ -15,6 +15,7 @@ const ChromeLauncher = require('chrome-launcher');
 const ChromeProtocol = require('../../../../lighthouse-core/gather/connections/cri.js');
 
 // Load bundle, which creates a `global.runBundledLighthouse`.
+// @ts-ignore - file won't exist until `yarn build-all`, but not used for types anyways.
 require('../../../../dist/lighthouse-dt-bundle.js');
 
 /** @type {import('../../../../lighthouse-core/index.js')} */

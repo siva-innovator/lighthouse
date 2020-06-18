@@ -311,12 +311,12 @@ function getBoundingClientRect(element) {
   // The protocol does not serialize getters, so extract the values explicitly.
   const rect = element.getBoundingClientRect();
   return {
-    top: rect.top,
-    bottom: rect.bottom,
-    left: rect.left,
-    right: rect.right,
-    width: rect.width,
-    height: rect.height,
+    top: Math.round(rect.top),
+    bottom: Math.round(rect.bottom),
+    left: Math.round(rect.left),
+    right: Math.round(rect.right),
+    width: Math.round(rect.width),
+    height: Math.round(rect.height),
   };
 }
 

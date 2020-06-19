@@ -347,9 +347,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     estimatedWastedBytesFromPolyfills += [...modulesSeen].reduce((acc, moduleIndex) => {
       return acc + graph.moduleSizes[moduleIndex];
     }, 0);
-    // Not needed?
-    estimatedWastedBytesFromPolyfills =
-      Math.min(estimatedWastedBytesFromPolyfills, graph.maxSize);
+    estimatedWastedBytesFromPolyfills = Math.min(estimatedWastedBytesFromPolyfills, graph.maxSize);
 
     let estimatedWastedBytesFromTransforms = 0;
 

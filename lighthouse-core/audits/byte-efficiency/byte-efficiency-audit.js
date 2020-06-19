@@ -230,34 +230,34 @@ class ByteEfficiencyAudit extends Audit {
   }
 
   /**
-   * Convert bytes to transfer size estimation.
+   * Utility function to estimate transfer size and cache calculation.
+   * @param {Map<string, number>} urlToTransferRatioMap
+   * @param {string} url
    * @param {LH.Artifacts} artifacts
    * @param {Array<LH.Artifacts.NetworkRequest>} networkRecords
-   * @param {Map<string, number>} wastedBytesByUrl
    */
-  static async convertResourceBytesToTransferBytes(artifacts, networkRecords, wastedBytesByUrl) {
-    const mainDocumentRecord = await NetworkAnalyzer.findMainDocument(networkRecords);
-    for (const [url, bytes] of wastedBytesByUrl.entries()) {
-      const networkRecord = url === artifacts.URL.finalUrl ?
-        mainDocumentRecord :
-        networkRecords.find(n => n.url === url);
-      const script = artifacts.ScriptElements.find(script => script.src === url);
-      if (!script || script.content === null) {
-        // This should never happen because we found the wasted bytes from bundles, which required contents in a ScriptElement.
-        continue;
-      }
-      if (!networkRecord) {
-        // This should never happen because we either have a network request for the main document (inline scripts),
-        // or the ScriptElement if for an external resource and so should have a network request.
-        continue;
-      }
+  static async estimateTransferRatio(urlToTransferRatioMap, url, artifacts, networkRecords) {
+    let transferRatio = urlToTransferRatioMap.get(url);
+    if (transferRatio !== undefined) return transferRatio;
 
+    const mainDocumentRecord = await NetworkAnalyzer.findMainDocument(networkRecords);
+    const networkRecord = url === artifacts.URL.finalUrl ?
+      mainDocumentRecord :
+      networkRecords.find(n => n.url === url);
+    const script = artifacts.ScriptElements.find(script => script.src === url);
+
+    if (!script || script.content === null || !networkRecord) {
+      // Can't find content, so just use 1.
+      transferRatio = 1;
+    } else {
       const contentLength = script.content.length;
       const transferSize =
         ByteEfficiencyAudit.estimateTransferSize(networkRecord, contentLength, 'Script');
-      const transferRatio = transferSize / contentLength;
-      wastedBytesByUrl.set(url, bytes * transferRatio);
+      transferRatio = transferSize / contentLength;
     }
+
+    urlToTransferRatioMap.set(url, transferRatio);
+    return transferRatio;
   }
 
   /* eslint-disable no-unused-vars */

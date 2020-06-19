@@ -380,10 +380,15 @@ class LegacyJavascript extends ByteEfficiencyAudit {
       ...this.getTransformPatterns(),
     ]);
 
+    /** @type {Map<string, number>} */
+    const urlToTransferRatioMap = new Map();
+
     const urlToMatchResults =
       this.detectAcrossScripts(matcher, artifacts.ScriptElements, networkRecords, bundles);
-    urlToMatchResults.forEach((matches, url) => {
-      const wastedBytes = this.estimateWastedBytes(matches);
+    for (const [url, matches] of urlToMatchResults.entries()) {
+      const transferRatio = await ByteEfficiencyAudit.estimateTransferRatio(
+        urlToTransferRatioMap, url, artifacts, networkRecords);
+      const wastedBytes = this.estimateWastedBytes(matches) * transferRatio;
       /** @type {typeof items[number]} */
       const item = {
         url,
@@ -411,7 +416,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
         item.subItems.items.push(subItem);
       }
       items.push(item);
-    });
+    }
 
     /** @type {Map<string, number>} */
     const wastedBytesByUrl = new Map();
@@ -421,7 +426,6 @@ class LegacyJavascript extends ByteEfficiencyAudit {
         wastedBytesByUrl.set(item.url, item.wastedBytes);
       }
     }
-    await this.convertResourceBytesToTransferBytes(artifacts, networkRecords, wastedBytesByUrl);
 
     /** @type {LH.Audit.Details.OpportunityColumnHeading[]} */
     const headings = [

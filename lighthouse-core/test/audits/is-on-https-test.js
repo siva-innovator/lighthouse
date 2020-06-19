@@ -65,6 +65,7 @@ describe('Security: HTTPS audit', () => {
     ];
     const mixedContentIssues = [
       {insecureURL: 'http://localhost/image.jpeg', resolutionStatus: 'MixedContentBlocked'},
+      {insecureURL: 'http://localhost/image2.jpeg', resolutionStatus: 'MixedContentBlockedLOL'},
     ];
     const artifacts = getArtifacts(networkRecords, mixedContentIssues);
     const result = await Audit.audit(artifacts, {computedCache: new Map()});
@@ -72,6 +73,8 @@ describe('Security: HTTPS audit', () => {
     expect(result.details.headings).toHaveLength(2);
     expect(result.details.items[0]).toMatchObject({url: 'http://localhost/image.jpeg'});
     expect(result.details.items[0].resolution).toBeDisplayString('Blocked');
+    // Unknown blocked resolution string is used as fallback.
+    expect(result.details.items[1].resolution).toBe('MixedContentBlockedLOL');
     expect(result.score).toBe(0);
   });
 

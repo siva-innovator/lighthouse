@@ -11,6 +11,7 @@
 
 const ByteEfficiencyAudit = require('./byte-efficiency-audit.js');
 const ModuleDuplication = require('../../computed/module-duplication.js');
+const NetworkAnalyzer = require('../../lib/dependency-graph/simulator/network-analyzer.js');
 const i18n = require('../../lib/i18n/i18n.js');
 
 const UIStrings = {
@@ -102,6 +103,17 @@ class DuplicatedJavascript extends ByteEfficiencyAudit {
   }
 
   /**
+   *
+   * @param {LH.Artifacts.NetworkRequest|undefined} networkRecord
+   * @param {number} contentLength
+   */
+  static _estimateTransferRatio(networkRecord, contentLength) {
+    const transferSize =
+      ByteEfficiencyAudit.estimateTransferSize(networkRecord, contentLength, 'Script');
+    return transferSize / contentLength;
+  }
+
+  /**
    * This audit highlights JavaScript modules that appear to be duplicated across all resources,
    * either within the same bundle or between different bundles. Each details item returned is
    * a module with subItems for each resource that includes it. The wastedBytes for the details
@@ -117,10 +129,13 @@ class DuplicatedJavascript extends ByteEfficiencyAudit {
       context.options && context.options.ignoreThresholdInBytes || IGNORE_THRESHOLD_IN_BYTES;
     const duplication =
       await DuplicatedJavascript._getDuplicationGroupedByNodeModules(artifacts, context);
+    const mainDocumentRecord = await NetworkAnalyzer.findMainDocument(networkRecords);
 
     /**
      * @typedef {LH.Audit.ByteEfficiencyItem} Item
      */
+
+    const transferRatioByUrl = new Map();
 
     /** @type {Item[]} */
     const items = [];
@@ -138,19 +153,47 @@ class DuplicatedJavascript extends ByteEfficiencyAudit {
       // is not present. Instead, size is used as a heuristic for latest version. This makes the
       // audit conserative in its estimation.
 
+      /** @type {SubItem[]} */
       const subItems = [];
 
       let wastedBytesTotal = 0;
       for (let i = 0; i < sourceDatas.length; i++) {
         const sourceData = sourceDatas[i];
         const url = sourceData.scriptUrl;
+
+        /** @type {number|undefined} */
+        let transferRatio = transferRatioByUrl.get(url);
+        if (transferRatio === undefined) {
+          const networkRecord = url === artifacts.URL.finalUrl ?
+            mainDocumentRecord :
+            networkRecords.find(n => n.url === url);
+
+          const script = artifacts.ScriptElements.find(script => script.src === url);
+          if (!script || script.content === null) {
+            // This should never happen because we found the wasted bytes from bundles, which required contents in a ScriptElement.
+            continue;
+          }
+
+          const contentLength = script.content.length;
+          transferRatio = DuplicatedJavascript._estimateTransferRatio(networkRecord, contentLength);
+          transferRatioByUrl.set(url, transferRatio);
+        }
+
+        if (transferRatio === undefined) {
+          // Shouldn't happen for above reasons.
+          continue;
+        }
+
+        const transferSize = Math.round(sourceData.resourceSize * transferRatio);
+
         subItems.push({
           url,
-          sourceBytes: sourceData.resourceSize,
+          sourceTransferBytes: transferSize,
         });
+
         if (i === 0) continue;
-        wastedBytesTotal += sourceData.resourceSize;
-        wastedBytesByUrl.set(url, (wastedBytesByUrl.get(url) || 0) + sourceData.resourceSize);
+        wastedBytesTotal += transferSize;
+        wastedBytesByUrl.set(url, (wastedBytesByUrl.get(url) || 0) + transferSize);
       }
 
       if (wastedBytesTotal <= ignoreThresholdInBytes) {
@@ -187,8 +230,6 @@ class DuplicatedJavascript extends ByteEfficiencyAudit {
         },
       });
     }
-
-    await this.convertResourceBytesToTransferBytes(artifacts, networkRecords, wastedBytesByUrl);
 
     /** @type {LH.Audit.Details.OpportunityColumnHeading[]} */
     const headings = [

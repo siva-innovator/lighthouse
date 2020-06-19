@@ -74,6 +74,10 @@ const smokeTests = [{
   id: 'source-maps',
   expectations: require('./source-maps/expectations.js'),
   config: require('./source-maps/source-maps-config.js'),
+}, {
+  id: 'screenshots',
+  expectations: require('./screenshots/expectations.js'),
+  config: require('./screenshots/screenshots-config.js'),
 }];
 
 module.exports = smokeTests;

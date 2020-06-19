@@ -1,0 +1,17 @@
+<style>
+body {
+  background: lightblue url('https://i.stack.imgur.com/YbUvO.gif') no-repeat fixed center;
+}
+p {
+  background-color: white;
+}
+</style>
+
+<body>
+  <script>
+    const params = new URLSearchParams(document.location.search);
+    document.body.style.height = params.get('height') || '100vh';
+  </script>
+  
+  <p>Screenshot tester.</p>
+</body>

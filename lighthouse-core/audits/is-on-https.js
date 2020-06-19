@@ -83,7 +83,7 @@ class HTTPS extends Audit {
           .map(record => URL.elideDataURI(record.url));
 
       /** @type {Array<{url: string, resolution?: string}>}  */
-      const items = Array.from(new Set(insecureURLs)).map(url => ({url}));
+      const items = Array.from(new Set(insecureURLs)).map(url => ({url, resolution: undefined}));
 
       /** @type {LH.Audit.Details.Table['headings']} */
       const headings = [

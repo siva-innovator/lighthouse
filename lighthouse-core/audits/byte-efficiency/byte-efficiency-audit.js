@@ -238,7 +238,7 @@ class ByteEfficiencyAudit extends Audit {
    * @param {LH.Crdp.Network.ResourceType=} resourceType
    */
   static async estimateTransferRatio(transferRatioByUrl, url, artifacts,
-    networkRecords, resourceType) {
+      networkRecords, resourceType) {
     let transferRatio = transferRatioByUrl.get(url);
     if (transferRatio !== undefined) return transferRatio;
 

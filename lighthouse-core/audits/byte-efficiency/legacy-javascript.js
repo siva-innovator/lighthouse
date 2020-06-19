@@ -381,13 +381,13 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     ]);
 
     /** @type {Map<string, number>} */
-    const urlToTransferRatioMap = new Map();
+    const transferRatioByUrl = new Map();
 
     const urlToMatchResults =
       this.detectAcrossScripts(matcher, artifacts.ScriptElements, networkRecords, bundles);
     for (const [url, matches] of urlToMatchResults.entries()) {
       const transferRatio = await ByteEfficiencyAudit.estimateTransferRatio(
-        urlToTransferRatioMap, url, artifacts, networkRecords);
+        transferRatioByUrl, url, artifacts, networkRecords, 'Script');
       const wastedBytes = this.estimateWastedBytes(matches) * transferRatio;
       /** @type {typeof items[number]} */
       const item = {

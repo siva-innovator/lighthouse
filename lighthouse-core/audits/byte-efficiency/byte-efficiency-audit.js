@@ -231,13 +231,15 @@ class ByteEfficiencyAudit extends Audit {
 
   /**
    * Utility function to estimate transfer size and cache calculation.
-   * @param {Map<string, number>} urlToTransferRatioMap
+   * @param {Map<string, number>} transferRatioByUrl
    * @param {string} url
    * @param {LH.Artifacts} artifacts
    * @param {Array<LH.Artifacts.NetworkRequest>} networkRecords
+   * @param {LH.Crdp.Network.ResourceType=} resourceType
    */
-  static async estimateTransferRatio(urlToTransferRatioMap, url, artifacts, networkRecords) {
-    let transferRatio = urlToTransferRatioMap.get(url);
+  static async estimateTransferRatio(transferRatioByUrl, url, artifacts,
+    networkRecords, resourceType) {
+    let transferRatio = transferRatioByUrl.get(url);
     if (transferRatio !== undefined) return transferRatio;
 
     const mainDocumentRecord = await NetworkAnalyzer.findMainDocument(networkRecords);
@@ -246,17 +248,17 @@ class ByteEfficiencyAudit extends Audit {
       networkRecords.find(n => n.url === url);
     const script = artifacts.ScriptElements.find(script => script.src === url);
 
-    if (!script || script.content === null || !networkRecord) {
+    if (!script || script.content === null) {
       // Can't find content, so just use 1.
       transferRatio = 1;
     } else {
       const contentLength = script.content.length;
       const transferSize =
-        ByteEfficiencyAudit.estimateTransferSize(networkRecord, contentLength, 'Script');
+        ByteEfficiencyAudit.estimateTransferSize(networkRecord, contentLength, resourceType);
       transferRatio = transferSize / contentLength;
     }
 
-    urlToTransferRatioMap.set(url, transferRatio);
+    transferRatioByUrl.set(url, transferRatio);
     return transferRatio;
   }
 

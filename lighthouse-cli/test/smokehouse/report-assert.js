@@ -175,7 +175,7 @@ function collateResults(localConsole, actual, expected) {
     const artifactNames = /** @type {(keyof LH.Artifacts)[]} */ (Object.keys(expectedArtifacts));
     artifactAssertions = artifactNames.map(artifactName => {
       const actualResult = (actual.artifacts || {})[artifactName];
-      if (!actualResult) {
+      if (!actualResult && expectedArtifacts[artifactName]) {
         localConsole.log(log.redify('Error: ') +
           `Config run did not generate artifact ${artifactName}`);
       }

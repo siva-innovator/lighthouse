@@ -14,5 +14,6 @@ module.exports = {
   extends: 'lighthouse:default',
   settings: {
     onlyAudits: ['full-page-screenshot'],
+    emulatedFormFactor: 'desktop',
   },
 };

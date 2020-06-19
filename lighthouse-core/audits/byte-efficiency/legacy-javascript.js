@@ -428,8 +428,8 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     /** @type {LH.Audit.Details.OpportunityColumnHeading[]} */
     const headings = [
       /* eslint-disable max-len */
-      {key: 'url', valueType: 'url', subHeading: {key: 'location', valueType: 'source-location'}, label: str_(i18n.UIStrings.columnURL)},
-      {key: null, valueType: 'code', subHeading: {key: 'signal'}, label: ''},
+      {key: 'url', valueType: 'url', subItemsHeading: {key: 'location', valueType: 'source-location'}, label: str_(i18n.UIStrings.columnURL)},
+      {key: null, valueType: 'code', subItemsHeading: {key: 'signal'}, label: ''},
       {key: 'wastedBytes', valueType: 'bytes', label: str_(i18n.UIStrings.columnWastedBytes)},
       /* eslint-enable max-len */
     ];

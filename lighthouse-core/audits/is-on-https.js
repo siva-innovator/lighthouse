@@ -40,6 +40,12 @@ const UIStrings = {
   upgraded: 'Automatically Upgraded',
 };
 
+const resolutionToString = {
+  MixedContentAutomaticallyUpgraded: UIStrings.upgraded,
+  MixedContentBlocked: UIStrings.blocked,
+  MixedContentWarning: UIStrings.warning,
+};
+
 const str_ = i18n.createMessageInstanceIdFn(__filename, UIStrings);
 
 const SECURE_SCHEMES = ['data', 'https', 'wss', 'blob', 'chrome', 'chrome-extension', 'about',
@@ -100,16 +106,8 @@ class HTTPS extends Audit {
             item = {url: details.insecureURL};
             items.push(item);
           }
-
-          if (details.resolutionStatus === 'MixedContentAutomaticallyUpgraded') {
-            item.resolution = UIStrings.upgraded;
-          } else if (details.resolutionStatus === 'MixedContentBlocked') {
-            item.resolution = UIStrings.blocked;
-          } else if (details.resolutionStatus === 'MixedContentWarning') {
-            item.resolution = UIStrings.warning;
-          } else {
-            item.resolution = details.resolutionStatus;
-          }
+          item.resolution =
+            resolutionToString[details.resolutionStatus] || details.resolutionStatus;
         }
       }
 

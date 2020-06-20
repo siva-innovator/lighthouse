@@ -5,10 +5,6 @@
  */
 'use strict';
 
-/**
- * Config file for running source map smokehouse.
- */
-
 /** @type {LH.Config.Json} */
 module.exports = {
   extends: 'lighthouse:default',

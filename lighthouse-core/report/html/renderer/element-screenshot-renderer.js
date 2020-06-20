@@ -108,7 +108,7 @@ class ElementScreenshotRenderer {
     const viewportSize = {
       width: dom.document().documentElement.clientWidth - reportEl.getBoundingClientRect().left,
       height: dom.document().documentElement.clientHeight - reportEl.getBoundingClientRect().top,
-    }
+    };
     for (const el of dom.document().querySelectorAll('.lh-element-screenshot')) {
       el.addEventListener('click', () => {
         const overlay = dom.createElement('div');
@@ -126,7 +126,7 @@ class ElementScreenshotRenderer {
           templateContext,
           clipRect,
           fullPageScreenshot,
-          viewportSize,
+          viewportSize
         ));
         overlay.addEventListener('click', () => {
           overlay.remove();

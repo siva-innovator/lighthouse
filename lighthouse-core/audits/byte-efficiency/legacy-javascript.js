@@ -388,7 +388,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     for (const [url, matches] of urlToMatchResults.entries()) {
       const transferRatio = await ByteEfficiencyAudit.estimateTransferRatio(
         transferRatioByUrl, url, artifacts, networkRecords, 'Script');
-      const wastedBytes = this.estimateWastedBytes(matches) * transferRatio;
+      const wastedBytes = Math.round(this.estimateWastedBytes(matches) * transferRatio);
       /** @type {typeof items[number]} */
       const item = {
         url,

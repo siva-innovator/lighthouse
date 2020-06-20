@@ -104,6 +104,11 @@ class ElementScreenshotRenderer {
   static installOverlayFeature(dom, templateContext, fullPageScreenshot) {
     ElementScreenshotRenderer._installBackgroundImageStyle(dom, fullPageScreenshot);
 
+    const reportEl = dom.find('.lh-report', dom.document());
+    const viewportSize = {
+      width: dom.document().documentElement.clientWidth - reportEl.getBoundingClientRect().left,
+      height: dom.document().documentElement.clientHeight - reportEl.getBoundingClientRect().top,
+    }
     for (const el of dom.document().querySelectorAll('.lh-element-screenshot')) {
       el.addEventListener('click', () => {
         const overlay = dom.createElement('div');
@@ -121,18 +126,13 @@ class ElementScreenshotRenderer {
           templateContext,
           clipRect,
           fullPageScreenshot,
-          {
-            // TODO: should this be documentElement width?
-            width: window.innerWidth * 0.75,
-            height: window.innerHeight * 0.75,
-          }
+          viewportSize,
         ));
         overlay.addEventListener('click', () => {
           overlay.remove();
         });
 
-        const containerEl = dom.find('.lh-container', dom.document());
-        containerEl.appendChild(overlay);
+        reportEl.appendChild(overlay);
       });
     }
   }

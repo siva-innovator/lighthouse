@@ -30,7 +30,7 @@ const expectations = [
     lhr: {
       requestedUrl: 'http://localhost:10200/screenshots.html?height=1000vh',
       finalUrl: 'http://localhost:10200/screenshots.html?height=1000vh',
-      runWarnings: ["Full page screenshot is too big."],
+      runWarnings: ['Full page screenshot is too big.'],
       audits: {},
     },
   },

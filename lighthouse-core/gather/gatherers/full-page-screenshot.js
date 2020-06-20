@@ -15,6 +15,13 @@ const MAX_SCREENSHOT_HEIGHT = 16384;
 // Maximum data URL size in Chrome https://bugs.chromium.org/p/chromium/issues/detail?id=69227
 const MAX_DATA_URL_SIZE = 2 * 1024 * 1024 - 1;
 
+/**
+ * @param {string} str
+ */
+function snakeCaseToCamelCase(str) {
+  return str.replace(/(-\w)/g, m => m[1].toUpperCase());
+}
+
 class FullPageScreenshot extends Gatherer {
   /**
    * @param {LH.Gatherer.PassContext} passContext
@@ -24,7 +31,8 @@ class FullPageScreenshot extends Gatherer {
   async _takeScreenshot(passContext, maxScreenshotHeight) {
     const driver = passContext.driver;
     const metrics = await driver.sendCommand('Page.getLayoutMetrics');
-    const width = await driver.evaluateAsync(`window.innerWidth`);
+    const width = await driver.evaluateAsync('window.innerWidth');
+    const deviceScaleFactor = await driver.evaluateAsync('window.devicePixelRatio');
     const height = Math.min(metrics.contentSize.height, maxScreenshotHeight);
 
     await driver.sendCommand('Emulation.setDeviceMetricsOverride', {
@@ -33,7 +41,7 @@ class FullPageScreenshot extends Gatherer {
       screenHeight: height,
       width,
       screenWidth: width,
-      deviceScaleFactor: 1,
+      deviceScaleFactor,
     });
 
     const result = await driver.sendCommand('Page.captureScreenshot', {
@@ -59,7 +67,7 @@ class FullPageScreenshot extends Gatherer {
     if (screenshot.data.length > MAX_DATA_URL_SIZE) {
       // Hitting the data URL size limit is rare, it only happens for pages on tall
       // desktop sites with lots of images.
-      // So just cutting down the height a bit fixes the issue.
+      // So just cutting down the height a bit usually fixes the issue.
       screenshot = await this._takeScreenshot(passContext, 5000);
       if (screenshot.data.length > MAX_DATA_URL_SIZE) {
         passContext.LighthouseRunWarnings.push('Full page screenshot is too big.');
@@ -83,7 +91,6 @@ class FullPageScreenshot extends Gatherer {
     const lighthouseControlsEmulation = passContext.settings.emulatedFormFactor !== 'none' &&
       !passContext.settings.internalDisableDeviceScreenEmulation;
 
-
     try {
       return await this.afterPass_(passContext);
     } finally {
@@ -104,9 +111,16 @@ class FullPageScreenshot extends Gatherer {
             height: document.documentElement.clientHeight,
             screenWidth: window.screen.width,
             screenHeight: window.screen.height,
+            screenOrientation: {
+              type: window.screen.orientation.type,
+              angle: window.screen.orientation.angle,
+            },
             deviceScaleFactor: window.devicePixelRatio,
           };
         })()`, {useIsolation: true});
+        // Convert the Web API's snake case (landscape-primary) to camel case (landscapePrimary).
+        observedDeviceMetrics.screenOrientation.type =
+          snakeCaseToCamelCase(observedDeviceMetrics.screenOrientation.type);
         await driver.sendCommand('Emulation.setDeviceMetricsOverride', observedDeviceMetrics);
       }
     }

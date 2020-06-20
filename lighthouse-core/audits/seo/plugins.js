@@ -144,13 +144,11 @@ class Plugins extends Audit {
           .map(param => `<param ${param.name}="${param.value}" />`)
           .join('');
 
-        /** @type {LH.Audit.Details.NodeValue} */
-        const source = {
-          type: 'node',
-          snippet: `<${tagName}${attributes}>${params}</${tagName}>`,
-        };
         return {
-          source,
+          source: {
+            type: /** @type {'node'} */ ('node'),
+            snippet: `<${tagName}${attributes}>${params}</${tagName}>`,
+          },
         };
       });
 

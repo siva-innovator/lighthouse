@@ -110,6 +110,8 @@ declare global {
       Fonts: Artifacts.Font[];
       /** Information on poorly sized font usage and the text affected by it. */
       FontSize: Artifacts.FontSize;
+      /** Screenshot of the entire page (rather than just the above the fold content). */
+      FullPageScreenshot: Artifacts.FullPageScreenshot | null;
       /** The issues surfaced in the devtools Issues panel */
       InspectorIssues: Artifacts.InspectorIssues;
       /** The page's document body innerText if loaded with JavaScript disabled. */
@@ -142,8 +144,6 @@ declare global {
       TagsBlockingFirstPaint: Artifacts.TagBlockingFirstPaint[];
       /** Information about tap targets including their position and size. */
       TapTargets: Artifacts.TapTarget[];
-      /** Screenshot of the entire page (rather than just the above the fold content). */
-      FullPageScreenshot: Artifacts.FullPageScreenshot | null;
       /** Elements associated with metrics (ie: Largest Contentful Paint element). */
       TraceElements: Artifacts.TraceElement[];
     }

@@ -47,7 +47,6 @@ const NUMERICAL_EXPECTATION_REGEXP =
  * @return {boolean}
  */
 function matchesExpectation(actual, expected) {
-  if (expected instanceof RegExp) debugger;
   if (typeof actual === 'number' && NUMERICAL_EXPECTATION_REGEXP.test(expected)) {
     const parts = expected.match(NUMERICAL_EXPECTATION_REGEXP);
     const [, prefixNumber, operator, postfixNumber] = parts;

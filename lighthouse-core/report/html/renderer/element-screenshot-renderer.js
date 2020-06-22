@@ -128,15 +128,15 @@ class ElementScreenshotRenderer {
           width: Number(el.getAttribute('rectWidth')),
           height: Number(el.getAttribute('rectHeight')),
           left: Number(el.getAttribute('rectLeft')),
-          right: Number(el.getAttribute('rectRight')),
+          right: Number(el.getAttribute('rectLeft')) + Number(el.getAttribute('rectWidth')),
           top: Number(el.getAttribute('rectTop')),
-          bottom: Number(el.getAttribute('rectBottom')),
+          bottom: Number(el.getAttribute('rectTop')) + Number(el.getAttribute('rectHeight')),
         };
         overlay.appendChild(ElementScreenshotRenderer.render(
           dom,
           templateContext,
-          elementRectInScreenshotCoords,
           fullPageScreenshot,
+          elementRectInScreenshotCoords,
           renderContainerSizeInDisplayCoords
         ));
         overlay.addEventListener('click', () => {
@@ -166,13 +166,13 @@ class ElementScreenshotRenderer {
   /**
    * @param {DOM} dom
    * @param {ParentNode} templateContext
-   * @param {LH.Artifacts.Rect} elementRectInScreenshotCoords Region of screenshot to highlight.
    * @param {LH.Artifacts.FullPageScreenshot} fullPageScreenshot
+   * @param {LH.Artifacts.Rect} elementRectInScreenshotCoords Region of screenshot to highlight.
    * @param {Size} renderContainerSizeInDisplayCoords
    * @return {Element}
    */
-  static render(dom, templateContext, elementRectInScreenshotCoords,
-      fullPageScreenshot, renderContainerSizeInDisplayCoords) {
+  static render(dom, templateContext, fullPageScreenshot, elementRectInScreenshotCoords,
+      renderContainerSizeInDisplayCoords) {
     //
     const tmpl = dom.cloneTemplate('#tmpl-lh-element-screenshot', templateContext);
     const containerEl = dom.find('.lh-element-screenshot', tmpl);
@@ -180,9 +180,7 @@ class ElementScreenshotRenderer {
     containerEl.setAttribute('rectWidth', elementRectInScreenshotCoords.width.toString());
     containerEl.setAttribute('rectHeight', elementRectInScreenshotCoords.height.toString());
     containerEl.setAttribute('rectLeft', elementRectInScreenshotCoords.left.toString());
-    containerEl.setAttribute('rectRight', elementRectInScreenshotCoords.right.toString());
     containerEl.setAttribute('rectTop', elementRectInScreenshotCoords.top.toString());
-    containerEl.setAttribute('rectBottom', elementRectInScreenshotCoords.bottom.toString());
 
     // Zoom out when highlighted region takes up most of the viewport.
     // This provides more context for where on the page this element is.

@@ -522,8 +522,8 @@ class DetailsRenderer {
     const elementScreenshot = ElementScreenshotRenderer.render(
       this._dom,
       this._templateContext,
-      item.boundingRect,
       fullPageScreenshot,
+      item.boundingRect,
       {width: 147, height: 100}
     );
     element.prepend(elementScreenshot);

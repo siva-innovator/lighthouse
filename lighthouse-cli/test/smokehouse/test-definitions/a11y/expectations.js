@@ -48,6 +48,14 @@ const expectations = [
               {
                 node: {
                   'type': 'node',
+                  'boundingRect': {
+                    'top': 257,
+                    'bottom': 278,
+                    'left': 8,
+                    'right': 972,
+                    'width': 964,
+                    'height': 21,
+                  },
                   'selector': '#aria-hidden-focus',
                   'snippet': '<div id="aria-hidden-focus" aria-hidden="true">\n        <button>Focusable Button</button>\n      </div>',
                   'explanation': 'Fix all of the following:\n  Focusable content should be disabled or be removed from the DOM',
@@ -64,6 +72,14 @@ const expectations = [
               {
                 node: {
                   'type': 'node',
+                  'boundingRect': {
+                    'top': 362,
+                    'bottom': 414,
+                    'left': 8,
+                    'right': 972,
+                    'width': 964,
+                    'height': 52,
+                  },
                   'selector': '#aria-input-field-name',
                   'snippet': '<div id="aria-input-field-name" role="textbox">text-in-a-box</div>',
                   'explanation': 'Fix any of the following:\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute or the title attribute is empty',

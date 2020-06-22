@@ -49,8 +49,8 @@ const expectations = [
                 node: {
                   'type': 'node',
                   'boundingRect': {
-                    'width': /d+/,
-                    'height': /d+/,
+                    'width': '>0',
+                    'height': '>0',
                   },
                   'selector': '#aria-hidden-focus',
                   'snippet': '<div id="aria-hidden-focus" aria-hidden="true">\n        <button>Focusable Button</button>\n      </div>',
@@ -69,8 +69,8 @@ const expectations = [
                 node: {
                   'type': 'node',
                   'boundingRect': {
-                    'width': /d+/,
-                    'height': /d+/,
+                    'width': '>0',
+                    'height': '>0',
                   },
                   'selector': '#aria-input-field-name',
                   'snippet': '<div id="aria-input-field-name" role="textbox">text-in-a-box</div>',

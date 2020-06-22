@@ -32,6 +32,8 @@ const UIStrings = {
   columnInsecureURL: 'Insecure URL',
   /** Label for a column in a data table; entries in the column will be how the browser handled insecure (non-HTTPS) network requests. */
   columnResolution: 'Resolution',
+  /** Value for the resolution column in a data table; denotes that the insecure URL was allowed by the browser. */
+  allowed: 'Allowed',
   /** Value for the resolution column in a data table; denotes that the insecure URL was blocked by the browser. */
   blocked: 'Blocked',
   /** Value for the resolution column in a data table; denotes that the insecure URL may be blocked by the browser in the future. */
@@ -109,6 +111,15 @@ class HTTPS extends Audit {
           item.resolution =
             resolutionToString[details.resolutionStatus] || details.resolutionStatus;
         }
+      }
+
+      // If a resolution wasn't assigned from an InspectorIssue, then the item
+      // is not blocked by the browser but we've determined it is insecure anyhow.
+      // For example, if the URL is localhost, all `http` requests are valid
+      // (localhost is a secure context), but we still identify `http` requests
+      // as an "Allowed" insecure URL.
+      for (const item of items) {
+        if (!item.resolution) item.resolution = UIStrings.allowed;
       }
 
       let displayValue = '';

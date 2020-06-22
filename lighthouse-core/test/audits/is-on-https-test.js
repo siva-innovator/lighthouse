@@ -61,7 +61,7 @@ describe('Security: HTTPS audit', () => {
     const networkRecords = [
       {url: 'https://google.com/', parsedURL: {scheme: 'https', host: 'google.com'}},
       {url: 'http://localhost/image.jpeg', parsedURL: {scheme: 'http', host: 'localhost'}},
-      {url: 'https://google.com/', parsedURL: {scheme: 'https', host: 'google.com'}},
+      {url: 'http://google.com/', parsedURL: {scheme: 'http', host: 'google.com'}},
     ];
     const mixedContentIssues = [
       {insecureURL: 'http://localhost/image.jpeg', resolutionStatus: 'MixedContentBlocked'},
@@ -71,10 +71,18 @@ describe('Security: HTTPS audit', () => {
     const result = await Audit.audit(artifacts, {computedCache: new Map()});
 
     expect(result.details.headings).toHaveLength(2);
-    expect(result.details.items[0]).toMatchObject({url: 'http://localhost/image.jpeg'});
-    expect(result.details.items[0].resolution).toBeDisplayString('Blocked');
+    expect(result.details.items).toHaveLength(3);
+
+    expect(result.details.items[0]).toMatchObject({url: 'http://google.com/'});
+    expect(result.details.items[0].resolution).toBeDisplayString('Allowed');
+
+    expect(result.details.items[1]).toMatchObject({url: 'http://localhost/image.jpeg'});
+    expect(result.details.items[1].resolution).toBeDisplayString('Blocked');
+
     // Unknown blocked resolution string is used as fallback.
-    expect(result.details.items[1].resolution).toBe('MixedContentBlockedLOL');
+    expect(result.details.items[2]).toMatchObject({url: 'http://localhost/image2.jpeg'});
+    expect(result.details.items[2].resolution).toBe('MixedContentBlockedLOL');
+
     expect(result.score).toBe(0);
   });
 

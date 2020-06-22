@@ -106,7 +106,6 @@ class FullPageScreenshot extends Gatherer {
         // and then just call that to reset?
         const observedDeviceMetrics = await driver.evaluateAsync(`(function() {
           return {
-            mobile: ${passContext.baseArtifacts.TestedAsMobileDevice}, // could easily be wrong
             width: document.documentElement.clientWidth,
             height: document.documentElement.clientHeight,
             screenWidth: window.screen.width,
@@ -121,7 +120,10 @@ class FullPageScreenshot extends Gatherer {
         // Convert the Web API's snake case (landscape-primary) to camel case (landscapePrimary).
         observedDeviceMetrics.screenOrientation.type =
           snakeCaseToCamelCase(observedDeviceMetrics.screenOrientation.type);
-        await driver.sendCommand('Emulation.setDeviceMetricsOverride', observedDeviceMetrics);
+        await driver.sendCommand('Emulation.setDeviceMetricsOverride', {
+          mobile: passContext.baseArtifacts.TestedAsMobileDevice, // could easily be wrong
+          ...observedDeviceMetrics,
+        });
       }
     }
   }

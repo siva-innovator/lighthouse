@@ -10,13 +10,29 @@
 const FullPageScreenshotGatherer = require('../../../gather/gatherers/full-page-screenshot.js');
 
 /**
- * @param {{contentSize: any, screenshotData: string[]}}
+ * @param {{contentSize: {width: number, height: number}, screenSize: {width?: number, height?: number, dpr: number}, screenshotData: string[]}}
  */
-function createMockDriver({contentSize, screenshotData}) {
+function createMockDriver({contentSize, screenSize, screenshotData}) {
   return {
     evaluateAsync: async function(code) {
       if (code === 'window.innerWidth') {
-        return 412;
+        return contentSize.width;
+      }
+      if (code === 'window.devicePixelRatio') {
+        return screenSize ? screenSize.dpr : 1;
+      }
+      if (code.includes('document.documentElement.clientWidth')) {
+        return {
+          width: screenSize.width,
+          height: screenSize.height,
+          screenWidth: screenSize.width,
+          screenHeight: screenSize.height,
+          screenOrientation: {
+            type: 'landscape-primary',
+            angle: 30,
+          },
+          deviceScaleFactor: screenSize.dpr,
+        };
       }
     },
     beginEmulation: jest.fn(),
@@ -86,8 +102,13 @@ describe('Full-page screenshot gatherer', () => {
     const fpsGatherer = new FullPageScreenshotGatherer();
     const driver = createMockDriver({
       contentSize: {
-        width: 412,
-        height: 2000,
+        width: 500,
+        height: 1500,
+      },
+      screenSize: {
+        width: 500,
+        height: 500,
+        dpr: 2,
       },
     });
     const passContext = {
@@ -95,19 +116,40 @@ describe('Full-page screenshot gatherer', () => {
         emulatedFormFactor: 'none',
       },
       driver,
-      baseArtifacts: {},
+      baseArtifacts: {
+        TestedAsMobileDevice: true,
+      },
     };
 
     await fpsGatherer.afterPass(passContext);
 
+    // Setting up for screenshot.
     expect(driver.sendCommand).toHaveBeenCalledWith(
       'Emulation.setDeviceMetricsOverride',
       expect.objectContaining({
-        deviceScaleFactor: 1,
-        height: 2000,
-        screenHeight: 2000,
-        screenWidth: 412,
-        width: 412,
+        mobile: true,
+        deviceScaleFactor: 2,
+        height: 1500,
+        width: 500,
+        screenHeight: 1500,
+        screenWidth: 500,
+      })
+    );
+
+    // Restoring.
+    expect(driver.sendCommand).toHaveBeenCalledWith(
+      'Emulation.setDeviceMetricsOverride',
+      expect.objectContaining({
+        mobile: true,
+        deviceScaleFactor: 2,
+        height: 500,
+        width: 500,
+        screenHeight: 500,
+        screenWidth: 500,
+        screenOrientation: {
+          type: 'landscapePrimary',
+          angle: 30,
+        },
       })
     );
   });
@@ -118,6 +160,9 @@ describe('Full-page screenshot gatherer', () => {
       contentSize: {
         width: 412,
         height: 100000,
+      },
+      screenSize: {
+        dpr: 1,
       },
     });
     const passContext = {
@@ -147,6 +192,9 @@ describe('Full-page screenshot gatherer', () => {
         width: 412,
         height: 15000,
       },
+      screenSize: {
+        dpr: 2,
+      },
       screenshotData: [
         new Array(3 * 1024 * 1024).join('a'),
         new Array(1 * 1024 * 1024).join('a'),
@@ -165,7 +213,7 @@ describe('Full-page screenshot gatherer', () => {
     expect(driver.sendCommand).toHaveBeenCalledWith(
       'Emulation.setDeviceMetricsOverride',
       expect.objectContaining({
-        deviceScaleFactor: 1,
+        deviceScaleFactor: 2,
         height: 15000,
         screenHeight: 15000,
       })
@@ -173,7 +221,7 @@ describe('Full-page screenshot gatherer', () => {
     expect(driver.sendCommand).toHaveBeenCalledWith(
       'Emulation.setDeviceMetricsOverride',
       expect.objectContaining({
-        deviceScaleFactor: 1,
+        deviceScaleFactor: 2,
         height: 5000,
         screenHeight: 5000,
       })
@@ -188,6 +236,9 @@ describe('Full-page screenshot gatherer', () => {
       contentSize: {
         width: 412,
         height: 15000,
+      },
+      screenSize: {
+        dpr: 3,
       },
       screenshotData: [
         new Array(3 * 1024 * 1024).join('a'),
@@ -208,7 +259,7 @@ describe('Full-page screenshot gatherer', () => {
     expect(driver.sendCommand).toHaveBeenCalledWith(
       'Emulation.setDeviceMetricsOverride',
       expect.objectContaining({
-        deviceScaleFactor: 1,
+        deviceScaleFactor: 3,
         height: 15000,
         screenHeight: 15000,
       })
@@ -216,7 +267,7 @@ describe('Full-page screenshot gatherer', () => {
     expect(driver.sendCommand).toHaveBeenCalledWith(
       'Emulation.setDeviceMetricsOverride',
       expect.objectContaining({
-        deviceScaleFactor: 1,
+        deviceScaleFactor: 3,
         height: 5000,
         screenHeight: 5000,
       })

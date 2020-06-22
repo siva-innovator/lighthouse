@@ -75,5 +75,22 @@ describe('getScreenshotPositions', () => {
         top: 250,
       },
     });
+
+    expect(
+      ElementScreenshotRenderer.getScreenshotPositions(
+        {left: 300, top: 4950, width: 100, height: 40},
+        {width: 200, height: 300},
+        {width: 412, height: 5000}
+      )
+    ).toMatchObject({
+      screenshot: {
+        left: 212,
+        top: 4700,
+      },
+      clip: {
+        left: 88,
+        top: 250,
+      },
+    });
   });
 });

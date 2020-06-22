@@ -25,22 +25,22 @@ function clamp(value, min, max) {
 class ElementScreenshotRenderer {
   /**
    * @param {Rect} elementRectInScreenshotCoords
-   * @param {Size} renderContainerSizeInDisplayCoords
+   * @param {Size} elementPreviewSizeInScreenshotCoords
    * @param {Size} screenshotSize
    */
   static getScreenshotPositions(
-      elementRectInScreenshotCoords, renderContainerSizeInDisplayCoords, screenshotSize) {
+      elementRectInScreenshotCoords, elementPreviewSizeInScreenshotCoords, screenshotSize) {
     //
     const elementRectCenter = RectHelpers.getRectCenterPoint(elementRectInScreenshotCoords);
 
     // Try to center clipped region.
     const screenshotLeftVisibleEdge = clamp(
-      elementRectCenter.x - renderContainerSizeInDisplayCoords.width / 2,
-      0, screenshotSize.width - renderContainerSizeInDisplayCoords.width
+      elementRectCenter.x - elementPreviewSizeInScreenshotCoords.width / 2,
+      0, screenshotSize.width - elementPreviewSizeInScreenshotCoords.width
     );
     const screenshotTopVisisbleEdge = clamp(
-      elementRectCenter.y - renderContainerSizeInDisplayCoords.height / 2,
-      0, screenshotSize.height - renderContainerSizeInDisplayCoords.height
+      elementRectCenter.y - elementPreviewSizeInScreenshotCoords.height / 2,
+      0, screenshotSize.height - elementPreviewSizeInScreenshotCoords.height
     );
 
     return {
@@ -57,10 +57,22 @@ class ElementScreenshotRenderer {
 
   /**
    * @param {DOM} dom
-   * @param {string} clipId
-   * @param {{top: number, bottom: number, left: number, right: number}} _
+   * @param {HTMLElement} mask
+   * @param {{left: number, top: number}} positionClip
+   * @param {LH.Artifacts.Rect} elementRectInScreenshotCoords
+   * @param {Size} elementPreviewSizeInScreenshotCoords
    */
-  static renderClipPath(dom, clipId, {top, bottom, left, right}) {
+  static renderClipPath(dom, mask, positionClip,
+      elementRectInScreenshotCoords, elementPreviewSizeInScreenshotCoords) {
+    // Normalize values between 0-1.
+    const top = positionClip.top / elementPreviewSizeInScreenshotCoords.height;
+    const bottom =
+      top + elementRectInScreenshotCoords.height / elementPreviewSizeInScreenshotCoords.height;
+    const left = positionClip.left / elementPreviewSizeInScreenshotCoords.width;
+    const right =
+      left + elementRectInScreenshotCoords.width / elementPreviewSizeInScreenshotCoords.width;
+
+    const clipId = `clip-${top}-${bottom}-${left}-${right}`;
     const clipPathSvg = dom.createElement('div');
     clipPathSvg.innerHTML = `<svg height="0" width="0">
         <defs>
@@ -72,7 +84,9 @@ class ElementScreenshotRenderer {
           </clipPath>
         </defs>
       </svg>`;
-    return clipPathSvg;
+
+    mask.style.clipPath = 'url(#' + clipId + ')';
+    mask.appendChild(clipPathSvg);
   }
 
   /**
@@ -175,25 +189,29 @@ class ElementScreenshotRenderer {
     const zoomFactor =
       this._computeZoomFactor(elementRectInScreenshotCoords, renderContainerSizeInDisplayCoords);
 
-    renderContainerSizeInDisplayCoords = {
+    const elementPreviewSizeInScreenshotCoords = {
       width: renderContainerSizeInDisplayCoords.width / zoomFactor,
       height: renderContainerSizeInDisplayCoords.height / zoomFactor,
     };
-    renderContainerSizeInDisplayCoords.width =
-      Math.min(fullPageScreenshot.width, renderContainerSizeInDisplayCoords.width);
+    elementPreviewSizeInScreenshotCoords.width =
+      Math.min(fullPageScreenshot.width, elementPreviewSizeInScreenshotCoords.width);
+    const elementPreviewSizeInDisplayCoords = {
+      width: elementPreviewSizeInScreenshotCoords.width * zoomFactor,
+      height: elementPreviewSizeInScreenshotCoords.height * zoomFactor,
+    };
 
     const positions = ElementScreenshotRenderer.getScreenshotPositions(
       elementRectInScreenshotCoords,
-      renderContainerSizeInDisplayCoords,
+      elementPreviewSizeInScreenshotCoords,
       {width: fullPageScreenshot.width, height: fullPageScreenshot.height}
     );
 
     const contentEl = dom.find('.lh-element-screenshot__content', containerEl);
-    contentEl.style.top = `-${renderContainerSizeInDisplayCoords.height * zoomFactor}px`;
+    contentEl.style.top = `-${elementPreviewSizeInDisplayCoords.height}px`;
 
     const image = dom.find('.lh-element-screenshot__image', containerEl);
-    image.style.width = renderContainerSizeInDisplayCoords.width * zoomFactor + 'px';
-    image.style.height = renderContainerSizeInDisplayCoords.height * zoomFactor + 'px';
+    image.style.width = elementPreviewSizeInDisplayCoords.width + 'px';
+    image.style.height = elementPreviewSizeInDisplayCoords.height + 'px';
 
     image.style.backgroundPositionY = -(positions.screenshot.top * zoomFactor) + 'px';
     image.style.backgroundPositionX = -(positions.screenshot.left * zoomFactor) + 'px';
@@ -207,19 +225,11 @@ class ElementScreenshotRenderer {
     elMarker.style.top = positions.clip.top * zoomFactor + 'px';
 
     const mask = dom.find('.lh-element-screenshot__mask', containerEl);
-    const top = positions.clip.top / renderContainerSizeInDisplayCoords.height;
-    const bottom = top + elementRectInScreenshotCoords.height / renderContainerSizeInDisplayCoords.height;
-    const left = positions.clip.left / renderContainerSizeInDisplayCoords.width;
-    const right = left + elementRectInScreenshotCoords.width / renderContainerSizeInDisplayCoords.width;
+    mask.style.width = elementPreviewSizeInDisplayCoords.width + 'px';
+    mask.style.height = elementPreviewSizeInDisplayCoords.height + 'px';
 
-    const clipId = `clip-${top}-${bottom}-${left}-${right}`;
-    mask.style.clipPath = 'url(#' + clipId + ')';
-    mask.style.width = renderContainerSizeInDisplayCoords.width * zoomFactor + 'px';
-    mask.style.height = renderContainerSizeInDisplayCoords.height * zoomFactor + 'px';
-
-    mask.appendChild(
-      ElementScreenshotRenderer.renderClipPath(dom, clipId, {top, bottom, left, right})
-    );
+    ElementScreenshotRenderer.renderClipPath(dom, mask, positions.clip,
+      elementRectInScreenshotCoords, elementPreviewSizeInScreenshotCoords);
 
     return containerEl;
   }

@@ -113,6 +113,7 @@ function getElementsInDocument(selector) {
  */
 /* istanbul ignore next */
 function getOuterHTMLSnippet(element, ignoreAttrs = []) {
+  const ATTRIBUTE_CHAR_LIMIT = 100;
   try {
     // ShadowRoots are sometimes passed in; use their hosts' outerHTML.
     if (element instanceof ShadowRoot) {
@@ -125,8 +126,8 @@ function getOuterHTMLSnippet(element, ignoreAttrs = []) {
     });
     for (const attributeName of clone.getAttributeNames()) {
       let attributeValue = clone.getAttribute(attributeName);
-      if (attributeValue.length > 100) {
-        attributeValue = attributeValue.slice(0, 97) + '...';
+      if (attributeValue.length > ATTRIBUTE_CHAR_LIMIT) {
+        attributeValue = attributeValue.slice(0, ATTRIBUTE_CHAR_LIMIT - 1) + '…';
         clone.setAttribute(attributeName, attributeValue);
       }
     }

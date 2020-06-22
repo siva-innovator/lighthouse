@@ -1347,13 +1347,13 @@ Object {
           "path": "accessibility",
         },
         Object {
-          "path": "full-page-screenshot",
-        },
-        Object {
           "path": "trace-elements",
         },
         Object {
           "path": "inspector-issues",
+        },
+        Object {
+          "path": "full-page-screenshot",
         },
       ],
       "loadFailureMode": "fatal",

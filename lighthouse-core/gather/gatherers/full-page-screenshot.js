@@ -87,7 +87,6 @@ class FullPageScreenshot extends Gatherer {
 
     // In case some other program is controlling emulation, try to remember what the device looks
     // like now and reset after gatherer is done.
-    // TODO: use screen orientation?
     const lighthouseControlsEmulation = passContext.settings.emulatedFormFactor !== 'none' &&
       !passContext.settings.internalDisableDeviceScreenEmulation;
 

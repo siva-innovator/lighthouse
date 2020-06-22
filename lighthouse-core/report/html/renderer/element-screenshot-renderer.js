@@ -162,19 +162,11 @@ class ElementScreenshotRenderer {
     containerEl.setAttribute('rectTop', clipRect.top.toString());
     containerEl.setAttribute('rectBottom', clipRect.bottom.toString());
 
-    // Zoom out (by double viewport but using 0.5 zoom factor) when highlighted region takes
-    // up most of the viewport. This provides more context for where on the page this element is.
-    /* todo: maybe only apply the width criterium in the preview screenshot (what's in the table, not the overlay) */
-    // if (clipRect.height > viewportSize.height / 2 || clipRect.width > viewportSize.width / 2) {
-    //   zoomFactor = 0.5;
-    //   viewport.width *= 2;
-    //   viewport.height *= 2;
-    // }
-
+    // Zoom out when highlighted region takes up most of the viewport.
+    // This provides more context for where on the page this element is.
     const intendedClipToViewportRatio = 0.75;
     const zoomRatioXY = {
       x: viewportSize.width / clipRect.width,
-      // x: 1, // ignore x?
       y: viewportSize.height / clipRect.height,
     };
     const zoomRatio = intendedClipToViewportRatio * Math.min(zoomRatioXY.x, zoomRatioXY.y);
@@ -193,9 +185,6 @@ class ElementScreenshotRenderer {
     );
 
     const contentEl = dom.find('.lh-element-screenshot__content', containerEl);
-    // TODO: can all the `* zoomFactor` be replaces with setting some CSS on the container?
-    // just `scale` doesn't work b/c won't change size of the element.
-    // containerEl.style.transform = `scale(${zoomFactor})`;
     contentEl.style.top = `-${viewport.height * zoomFactor}px`;
 
     const image = dom.find('.lh-element-screenshot__image', containerEl);
@@ -204,7 +193,6 @@ class ElementScreenshotRenderer {
 
     image.style.backgroundPositionY = -(positions.screenshot.top * zoomFactor) + 'px';
     image.style.backgroundPositionX = -(positions.screenshot.left * zoomFactor) + 'px';
-    // image.style.backgroundSize = (zoomFactor * 100) + '%';
     image.style.backgroundSize =
       `${fullPageScreenshot.width * zoomFactor}px ${fullPageScreenshot.height * zoomFactor}px`;
 

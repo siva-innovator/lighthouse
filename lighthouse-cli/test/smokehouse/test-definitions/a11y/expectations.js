@@ -49,10 +49,6 @@ const expectations = [
                 node: {
                   'type': 'node',
                   'boundingRect': {
-                    'top': 257,
-                    'bottom': 278,
-                    'left': 8,
-                    'right': 972,
                     'width': 964,
                     'height': 21,
                   },
@@ -73,10 +69,6 @@ const expectations = [
                 node: {
                   'type': 'node',
                   'boundingRect': {
-                    'top': 362,
-                    'bottom': 414,
-                    'left': 8,
-                    'right': 972,
                     'width': 964,
                     'height': 52,
                   },

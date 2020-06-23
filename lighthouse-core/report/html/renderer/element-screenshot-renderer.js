@@ -108,6 +108,8 @@ class ElementScreenshotRenderer {
   }
 
   /**
+   * Installs the lightbox elements and wires up click listeners to all .lh-element-screenshot elements.
+   * Should only be called exactly once per report render.
    * @param {DOM} dom
    * @param {ParentNode} templateContext
    * @param {LH.Artifacts.FullPageScreenshot} fullPageScreenshot

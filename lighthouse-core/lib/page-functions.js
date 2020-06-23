@@ -113,7 +113,7 @@ function getElementsInDocument(selector) {
  */
 /* istanbul ignore next */
 function getOuterHTMLSnippet(element, ignoreAttrs = []) {
-  const ATTRIBUTE_CHAR_LIMIT = 100;
+  const ATTRIBUTE_CHAR_LIMIT = 75;
   try {
     // ShadowRoots are sometimes passed in; use their hosts' outerHTML.
     if (element instanceof ShadowRoot) {

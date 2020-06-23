@@ -64,7 +64,7 @@ describe('Page Functions', () => {
 
     it('truncates attribute values that are too long', () => {
       const longClass = 'a'.repeat(200);
-      const truncatedExpectation = 'a'.repeat(99) + '…';
+      const truncatedExpectation = 'a'.repeat(74) + '…';
       assert.equal(pageFunctions.getOuterHTMLSnippet(
         dom.createElement('div', '', {class: longClass})), `<div class="${truncatedExpectation}">`
       );

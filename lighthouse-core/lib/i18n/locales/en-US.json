@@ -794,6 +794,9 @@
   "lighthouse-core/audits/installable-manifest.js | title": {
     "message": "Web app manifest meets the installability requirements"
   },
+  "lighthouse-core/audits/is-on-https.js | allowed": {
+    "message": "Allowed"
+  },
   "lighthouse-core/audits/is-on-https.js | blocked": {
     "message": "Blocked"
   },

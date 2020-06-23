@@ -794,6 +794,9 @@
   "lighthouse-core/audits/installable-manifest.js | title": {
     "message": "Ŵéb̂ áp̂ṕ m̂án̂íf̂éŝt́ m̂éêt́ŝ t́ĥé îńŝt́âĺl̂áb̂íl̂ít̂ý r̂éq̂úîŕêḿêńt̂ś"
   },
+  "lighthouse-core/audits/is-on-https.js | allowed": {
+    "message": "Âĺl̂óŵéd̂"
+  },
   "lighthouse-core/audits/is-on-https.js | blocked": {
     "message": "B̂ĺôćk̂éd̂"
   },

@@ -262,7 +262,6 @@ class LegacyJavascript extends ByteEfficiencyAudit {
         expression: /regeneratorRuntime\.a?wrap/.source,
         // Example of this transform: https://gist.github.com/connorjclark/af8bccfff377ac44efc104a79bc75da2
         // `regeneratorRuntime.awrap` is generated for every usage of `await`, and adds ~80 bytes each.
-        // TODO: maybe check for `_context.next` instead?
         estimator: result => result.count * 80,
       },
       {

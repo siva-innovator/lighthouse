@@ -62,7 +62,7 @@ describe('Page Functions', () => {
         dom.createElement('div', '', {style: 'style1\nstyle2'})), '<div style="style1\nstyle2">');
     });
 
-    it('truncates attribute values that are too long',  () => {
+    it('truncates attribute values that are too long', () => {
       const longClass = 'a'.repeat(200);
       const truncatedExpectation = 'a'.repeat(99) + '…';
       assert.equal(pageFunctions.getOuterHTMLSnippet(

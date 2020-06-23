@@ -327,7 +327,7 @@ class LegacyJavascript extends ByteEfficiencyAudit {
    * @return {number}
    */
   static estimateWastedBytes(matches) {
-    // Split up results based on polyfill / transform. Only polyfills start with @.
+    // Split up results based on polyfill / transform. Only transforms start with @.
     const polyfillResults = matches.filter(m => !m.name.startsWith('@'));
     const transformResults = matches.filter(m => m.name.startsWith('@'));
 

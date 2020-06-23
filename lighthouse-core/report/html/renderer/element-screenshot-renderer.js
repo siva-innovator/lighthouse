@@ -149,6 +149,8 @@ class ElementScreenshotRenderer {
   }
 
   /**
+   * Given the size of the element in the screenshot and the total available size of our preview container,
+   * compute the factor by which we need to zoom out to view the entire element with context.
    * @param {LH.Artifacts.Rect} elementRectInScreenshotCoords
    * @param {Size} renderContainerSizeInDisplayCoords
    * @return {number}

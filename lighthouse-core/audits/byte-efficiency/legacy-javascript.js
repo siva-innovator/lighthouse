@@ -22,6 +22,7 @@ const ByteEfficiencyAudit = require('./byte-efficiency-audit.js');
 const JsBundles = require('../../computed/js-bundles.js');
 const i18n = require('../../lib/i18n/i18n.js');
 const thirdPartyWeb = require('../../lib/third-party-web.js');
+const NetworkAnalyzer = require('../../lib/dependency-graph/simulator/network-analyzer.js');
 
 const UIStrings = {
   /** Title of a Lighthouse audit that tells the user about legacy polyfills and transforms used on the page. This is displayed in a list of audit titles that Lighthouse generates. */
@@ -362,6 +363,40 @@ class LegacyJavascript extends ByteEfficiencyAudit {
   }
 
   /**
+   * Utility function to estimate transfer size and cache calculation.
+   *
+   * Note: duplicated-javascript does this exact thing. In the future, consider
+   * making a generic estimator on ByteEfficienyAudit.
+   * @param {Map<string, number>} transferRatioByUrl
+   * @param {string} url
+   * @param {LH.Artifacts} artifacts
+   * @param {Array<LH.Artifacts.NetworkRequest>} networkRecords
+   */
+  static async estimateTransferRatioForScript(transferRatioByUrl, url, artifacts, networkRecords) {
+    let transferRatio = transferRatioByUrl.get(url);
+    if (transferRatio !== undefined) return transferRatio;
+
+    const mainDocumentRecord = await NetworkAnalyzer.findMainDocument(networkRecords);
+    const networkRecord = url === artifacts.URL.finalUrl ?
+      mainDocumentRecord :
+      networkRecords.find(n => n.url === url);
+    const script = artifacts.ScriptElements.find(script => script.src === url);
+
+    if (!script || script.content === null) {
+      // Can't find content, so just use 1.
+      transferRatio = 1;
+    } else {
+      const contentLength = script.content.length;
+      const transferSize =
+        ByteEfficiencyAudit.estimateTransferSize(networkRecord, contentLength, 'Script');
+      transferRatio = transferSize / contentLength;
+    }
+
+    transferRatioByUrl.set(url, transferRatio);
+    return transferRatio;
+  }
+
+  /**
    * @param {LH.Artifacts} artifacts
    * @param {Array<LH.Artifacts.NetworkRequest>} networkRecords
    * @param {LH.Audit.Context} context
@@ -385,8 +420,8 @@ class LegacyJavascript extends ByteEfficiencyAudit {
     const urlToMatchResults =
       this.detectAcrossScripts(matcher, artifacts.ScriptElements, networkRecords, bundles);
     for (const [url, matches] of urlToMatchResults.entries()) {
-      const transferRatio = await ByteEfficiencyAudit.estimateTransferRatio(
-        transferRatioByUrl, url, artifacts, networkRecords, 'Script');
+      const transferRatio = await this.estimateTransferRatioForScript(
+        transferRatioByUrl, url, artifacts, networkRecords);
       const wastedBytes = Math.round(this.estimateWastedBytes(matches) * transferRatio);
       /** @type {typeof items[number]} */
       const item = {

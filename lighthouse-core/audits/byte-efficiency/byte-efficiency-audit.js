@@ -9,7 +9,6 @@ const Audit = require('../audit.js');
 const linearInterpolation = require('../../lib/statistics.js').linearInterpolation;
 const Interactive = require('../../computed/metrics/lantern-interactive.js');
 const i18n = require('../../lib/i18n/i18n.js');
-const NetworkAnalyzer = require('../../lib/dependency-graph/simulator/network-analyzer.js');
 const NetworkRecords = require('../../computed/network-records.js');
 const LoadSimulator = require('../../computed/load-simulator.js');
 const PageDependencyGraph = require('../../computed/page-dependency-graph.js');
@@ -39,7 +38,7 @@ const WASTED_MS_FOR_SCORE_OF_ZERO = 5000;
  * @overview Used as the base for all byte efficiency audits. Computes total bytes
  *    and estimated time saved. Subclass and override `audit_` to return results.
  */
-class ByteEfficiencyAudit extends Audit {
+class UnusedBytes extends Audit {
   /**
    * Creates a score based on the wastedMs value using linear interpolation between control points.
    *
@@ -217,7 +216,7 @@ class ByteEfficiencyAudit extends Audit {
       displayValue,
       numericValue: wastedMs,
       numericUnit: 'millisecond',
-      score: ByteEfficiencyAudit.scoreForWastedMs(wastedMs),
+      score: UnusedBytes.scoreForWastedMs(wastedMs),
       extendedInfo: {
         value: {
           wastedMs,
@@ -227,39 +226,6 @@ class ByteEfficiencyAudit extends Audit {
       },
       details,
     };
-  }
-
-  /**
-   * Utility function to estimate transfer size and cache calculation.
-   * @param {Map<string, number>} transferRatioByUrl
-   * @param {string} url
-   * @param {LH.Artifacts} artifacts
-   * @param {Array<LH.Artifacts.NetworkRequest>} networkRecords
-   * @param {LH.Crdp.Network.ResourceType=} resourceType
-   */
-  static async estimateTransferRatio(transferRatioByUrl, url, artifacts,
-      networkRecords, resourceType) {
-    let transferRatio = transferRatioByUrl.get(url);
-    if (transferRatio !== undefined) return transferRatio;
-
-    const mainDocumentRecord = await NetworkAnalyzer.findMainDocument(networkRecords);
-    const networkRecord = url === artifacts.URL.finalUrl ?
-      mainDocumentRecord :
-      networkRecords.find(n => n.url === url);
-    const script = artifacts.ScriptElements.find(script => script.src === url);
-
-    if (!script || script.content === null) {
-      // Can't find content, so just use 1.
-      transferRatio = 1;
-    } else {
-      const contentLength = script.content.length;
-      const transferSize =
-        ByteEfficiencyAudit.estimateTransferSize(networkRecord, contentLength, resourceType);
-      transferRatio = transferSize / contentLength;
-    }
-
-    transferRatioByUrl.set(url, transferRatio);
-    return transferRatio;
   }
 
   /* eslint-disable no-unused-vars */
@@ -277,4 +243,4 @@ class ByteEfficiencyAudit extends Audit {
   /* eslint-enable no-unused-vars */
 }
 
-module.exports = ByteEfficiencyAudit;
+module.exports = UnusedBytes;

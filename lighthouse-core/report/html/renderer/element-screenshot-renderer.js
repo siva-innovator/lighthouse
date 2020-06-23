@@ -166,6 +166,8 @@ class ElementScreenshotRenderer {
   }
 
   /**
+   * Renders an element with surrounding context from the full page screenshot. 
+   * Used to render both the thumbnail preview in details tables and the full-page screenshot in the lightbox.
    * @param {DOM} dom
    * @param {ParentNode} templateContext
    * @param {LH.Artifacts.FullPageScreenshot} fullPageScreenshot

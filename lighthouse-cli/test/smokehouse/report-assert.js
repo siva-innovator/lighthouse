@@ -153,10 +153,11 @@ function makeComparison(name, actualResult, expectedResult) {
 
 /**
  * Delete expectations that don't match environment criteria.
+ * @param {LocalConsole} localConsole
  * @param {LH.Result} lhr
  * @param {Smokehouse.ExpectedRunnerResult} expected
  */
-function filterExpectations(lhr, expected) {
+function pruneExpectations(localConsole, lhr, expected) {
   const userAgent = lhr.userAgent;
   const userAgentMatch = /Chrome\/(\d+)/.exec(userAgent); // Chrome/85.0.4174.0
   if (!userAgentMatch) throw new Error('Could not get chrome version.');
@@ -175,9 +176,13 @@ function filterExpectations(lhr, expected) {
    */
   function filter(obj) {
     for (const key of Object.keys(obj)) {
-      if (!obj[key] || typeof obj !== 'object') continue;
-      else if (failsChromeVersionCheck(obj[key])) delete obj[key];
-      else filter(obj[key]);
+      const value = obj[key];
+      if (!value || typeof value !== 'object') continue;
+      else if (failsChromeVersionCheck(value)) {
+        localConsole.log(`[${key}] failed chrome version check, pruning expectation: ${
+          JSON.stringify(value, null, 2)}`);
+        delete obj[key];
+      } else filter(value);
     }
     delete obj._minChromeMajorVersion;
   }
@@ -193,7 +198,7 @@ function filterExpectations(lhr, expected) {
  * @return {Comparison[]}
  */
 function collateResults(localConsole, actual, expected) {
-  filterExpectations(actual.lhr, expected);
+  pruneExpectations(localConsole, actual.lhr, expected);
 
   // If actual run had a runtimeError, expected *must* have a runtimeError.
   // Relies on the fact that an `undefined` argument to makeComparison() can only match `undefined`.

@@ -11,6 +11,7 @@
 
 const ByteEfficiencyAudit = require('./byte-efficiency-audit.js');
 const ModuleDuplication = require('../../computed/module-duplication.js');
+const NetworkAnalyzer = require('../../lib/dependency-graph/simulator/network-analyzer.js');
 const i18n = require('../../lib/i18n/i18n.js');
 
 const UIStrings = {
@@ -128,12 +129,12 @@ class DuplicatedJavascript extends ByteEfficiencyAudit {
       context.options && context.options.ignoreThresholdInBytes || IGNORE_THRESHOLD_IN_BYTES;
     const duplication =
       await DuplicatedJavascript._getDuplicationGroupedByNodeModules(artifacts, context);
+    const mainDocumentRecord = await NetworkAnalyzer.findMainDocument(networkRecords);
 
     /**
      * @typedef {LH.Audit.ByteEfficiencyItem} Item
      */
 
-    /** @type {Map<string, number>} */
     const transferRatioByUrl = new Map();
 
     /** @type {Item[]} */
@@ -159,8 +160,30 @@ class DuplicatedJavascript extends ByteEfficiencyAudit {
       for (let i = 0; i < sourceDatas.length; i++) {
         const sourceData = sourceDatas[i];
         const url = sourceData.scriptUrl;
-        const transferRatio = await ByteEfficiencyAudit.estimateTransferRatio(
-          transferRatioByUrl, url, artifacts, networkRecords, 'Script');
+
+        /** @type {number|undefined} */
+        let transferRatio = transferRatioByUrl.get(url);
+        if (transferRatio === undefined) {
+          const networkRecord = url === artifacts.URL.finalUrl ?
+            mainDocumentRecord :
+            networkRecords.find(n => n.url === url);
+
+          const script = artifacts.ScriptElements.find(script => script.src === url);
+          if (!script || script.content === null) {
+            // This should never happen because we found the wasted bytes from bundles, which required contents in a ScriptElement.
+            continue;
+          }
+
+          const contentLength = script.content.length;
+          transferRatio = DuplicatedJavascript._estimateTransferRatio(networkRecord, contentLength);
+          transferRatioByUrl.set(url, transferRatio);
+        }
+
+        if (transferRatio === undefined) {
+          // Shouldn't happen for above reasons.
+          continue;
+        }
+
         const transferSize = Math.round(sourceData.resourceSize * transferRatio);
 
         subItems.push({
@@ -212,7 +235,7 @@ class DuplicatedJavascript extends ByteEfficiencyAudit {
     const headings = [
       /* eslint-disable max-len */
       {key: 'source', valueType: 'code', subItemsHeading: {key: 'url', valueType: 'url'}, label: str_(i18n.UIStrings.columnSource)},
-      {key: '_', valueType: 'bytes', subItemsHeading: {key: 'sourceTransferBytes'}, granularity: 0.05, label: str_(i18n.UIStrings.columnTransferSize)},
+      {key: null, valueType: 'bytes', subItemsHeading: {key: 'sourceTransferBytes'}, granularity: 0.05, label: str_(i18n.UIStrings.columnTransferSize)},
       {key: 'wastedBytes', valueType: 'bytes', granularity: 0.05, label: str_(i18n.UIStrings.columnWastedBytes)},
       /* eslint-enable max-len */
     ];

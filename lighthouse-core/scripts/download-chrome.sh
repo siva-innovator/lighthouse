@@ -14,8 +14,6 @@ else
   url="https://download-chromium.appspot.com/dl/Linux_x64?type=snapshots"
 fi
 
-rm -rf "$CHROME_PATH"
-
 if [ x"$CHROME_PATH" == x ]; then
   echo "Error: Environment variable CHROME_PATH not set"
   exit 1

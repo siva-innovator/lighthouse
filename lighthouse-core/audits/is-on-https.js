@@ -108,8 +108,9 @@ class HTTPS extends Audit {
             item = {url: details.insecureURL};
             items.push(item);
           }
-          item.resolution =
-            resolutionToString[details.resolutionStatus] || details.resolutionStatus;
+          item.resolution = resolutionToString[details.resolutionStatus] ?
+            str_(resolutionToString[details.resolutionStatus]) :
+            details.resolutionStatus;
         }
       }
 

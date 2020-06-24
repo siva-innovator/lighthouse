@@ -487,6 +487,7 @@ declare global {
         nodeLabel?: string;
         devtoolsNodePath: string;
         snippet?: string;
+        score?: number;
         boundingRect: Rect;
       }
 

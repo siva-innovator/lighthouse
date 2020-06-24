@@ -12,7 +12,7 @@
  * ./lighthouse-core/scripts/legacy-javascript - verification tool.
  */
 
-/** @typedef {{name: string, expression: string, estimator?: (result: PatternMatchResult) => number}} Pattern */
+/** @typedef {{name: string, expression: string, estimateBytes?: (result: PatternMatchResult) => number}} Pattern */
 /** @typedef {{name: string, line: number, column: number, count: number}} PatternMatchResult */
 /** @typedef {import('./byte-efficiency-audit.js').ByteEfficiencyProduct} ByteEfficiencyProduct */
 /** @typedef {LH.Audit.ByteEfficiencyItem & {subItems: {type: 'subitems', items: SubItem[]}}} Item */
@@ -256,19 +256,19 @@ class LegacyJavascript extends ByteEfficiencyAudit {
       {
         name: '@babel/plugin-transform-classes',
         expression: 'Cannot call a class as a function',
-        estimator: result => 150 + result.count * '_classCallCheck()'.length,
+        estimateBytes: result => 150 + result.count * '_classCallCheck()'.length,
       },
       {
         name: '@babel/plugin-transform-regenerator',
         expression: /regeneratorRuntime\.a?wrap/.source,
         // Example of this transform: https://gist.github.com/connorjclark/af8bccfff377ac44efc104a79bc75da2
         // `regeneratorRuntime.awrap` is generated for every usage of `await`, and adds ~80 bytes each.
-        estimator: result => result.count * 80,
+        estimateBytes: result => result.count * 80,
       },
       {
         name: '@babel/plugin-transform-spread',
         expression: /\.apply\(void 0,\s?_toConsumableArray/.source,
-        estimator: result => 1169 + result.count * '_toConsumableArray()'.length,
+        estimateBytes: result => 1169 + result.count * '_toConsumableArray()'.length,
       },
     ];
   }
@@ -353,8 +353,8 @@ class LegacyJavascript extends ByteEfficiencyAudit {
 
     for (const result of transformResults) {
       const pattern = this.getTransformPatterns().find(p => p.name === result.name);
-      if (!pattern || !pattern.estimator) continue;
-      estimatedWastedBytesFromTransforms += pattern.estimator(result);
+      if (!pattern || !pattern.estimateBytes) continue;
+      estimatedWastedBytesFromTransforms += pattern.estimateBytes(result);
     }
 
     const estimatedWastedBytes =

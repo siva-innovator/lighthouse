@@ -11,9 +11,7 @@
  * @fileoverview - Used to generate size estimation data for polyfills in LegacyJavaScript audit.
  *
  * Returns a flattened graph of modules found in bundles used for an individual core-js polyfill.
- * `.dependencies` is indexed by the polyfill name and be an array of module indicies
- * `.moduleSizes` is an array of numbers, indexed by the arrays in `.dependencies`
- * `.maxSize`
+ * See PolyfillSizeEstimator typedef for explanations of the structure of the graph properties
  *
  * USAGE:
  *   1. Run `node run.js`

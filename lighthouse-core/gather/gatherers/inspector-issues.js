@@ -34,7 +34,7 @@ class InspectorIssues extends Gatherer {
     const driver = passContext.driver;
     driver.on('Audits.issueAdded', this._onIssueAdded);
     // try {
-      await driver.sendCommand('Audits.enable');
+    await driver.sendCommand('Audits.enable');
     // } catch (_) {} // Fails if Chrome is older than 82.
   }
 
@@ -49,7 +49,7 @@ class InspectorIssues extends Gatherer {
 
     driver.off('Audits.issueAdded', this._onIssueAdded);
     // try {
-      await driver.sendCommand('Audits.disable');
+    await driver.sendCommand('Audits.disable');
     // } catch (_) {} // Fails if Chrome is older than 82.
     const artifact = {
       /** @type {Array<LH.Crdp.Audits.MixedContentIssueDetails>} */

@@ -73,15 +73,21 @@ describe('Security: HTTPS audit', () => {
     expect(result.details.headings).toHaveLength(2);
     expect(result.details.items).toHaveLength(3);
 
-    expect(result.details.items[0]).toMatchObject({url: 'http://google.com/'});
-    expect(result.details.items[0].resolution).toBeDisplayString('Allowed');
+    expect(result.details.items[0]).toMatchObject({
+      url: 'http://google.com/',
+      resolution: expect.toBeDisplayString('Allowed'),
+    });
 
-    expect(result.details.items[1]).toMatchObject({url: 'http://localhost/image.jpeg'});
-    expect(result.details.items[1].resolution).toBeDisplayString('Blocked');
+    expect(result.details.items[1]).toMatchObject({
+      url: 'http://localhost/image.jpeg',
+      resolution: expect.toBeDisplayString('Blocked'),
+    });
 
     // Unknown blocked resolution string is used as fallback.
-    expect(result.details.items[2]).toMatchObject({url: 'http://localhost/image2.jpeg'});
-    expect(result.details.items[2].resolution).toBe('MixedContentBlockedLOL');
+    expect(result.details.items[2]).toMatchObject({
+      url: 'http://localhost/image2.jpeg',
+      resolution: expect.toBeDisplayString('MixedContentBlockedLOL'),
+    });
 
     expect(result.score).toBe(0);
   });

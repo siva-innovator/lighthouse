@@ -1353,6 +1353,9 @@ Object {
           "path": "inspector-issues",
         },
         Object {
+          "path": "source-maps",
+        },
+        Object {
           "path": "full-page-screenshot",
         },
       ],

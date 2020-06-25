@@ -65,9 +65,9 @@ git commit -m "v$NEW_VERSION"
 
 echo "Version bump commit ready on the ${TXT_BOLD}$BRANCH_NAME${TXT_RESET} branch!"
 
-echo "${TXT_DIM}Press any key to see the git diff, CTRL+C to exit...${TXT_RESET}"
+echo "${TXT_DIM}Press Space to see the git diff, CTRL+C to exit...${TXT_RESET}"
 read -n 1 -r unused_variable
 git diff HEAD^
-echo "${TXT_DIM}Press any key to push to GitHub, CTRL+C to exit...${TXT_RESET}"
+echo "${TXT_DIM}Press Space to push to GitHub, CTRL+C to exit...${TXT_RESET}"
 read -n 1 -r unused_variable
 git push -u origin "$BRANCH_NAME"

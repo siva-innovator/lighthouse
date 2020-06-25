@@ -58,6 +58,6 @@ rsync -avh "$lh_locales_dir" "$fe_locales_dir" --exclude="*.ctc.json" --delete
 echo -e "$check Locale JSON files copied."
 
 echo ""
-echo "Done. To rebase the test expectations, run: "
-echo "    yarn --cwd ~/chromium/src/third_party/devtools-frontend/src test 'http/tests/devtools/lighthouse/*.js' --layout-tests-dir test/webtests --reset-results"
-echo " (you also need to do 'autoninja -C out/Linux chrome blink_tests' in the chromium checkout)"
+echo "Done. To rebase the test expectations, run: " 
+echo "    cd '$chromium_dir' && third_party/blink/tools/run_web_tests.py http/tests/devtools/lighthouse -t Default --layout-tests-dir third_party/devtools-frontend/src/test/webtests --reset-results"
+echo " (you also need to do 'autoninja -C out/Default chrome blink_tests content_shell' in the chromium checkout)"

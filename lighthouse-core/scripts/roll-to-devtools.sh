@@ -18,9 +18,9 @@
 
 check="\033[96m ✓\033[39m"
 
-if [[ -n "$1" ]]; then	
+if [[ -n "$1" ]]; then
   dt_dir="$1"
-else	
+else
   dt_dir="$HOME/src/devtools/devtools-frontend"
 fi
 

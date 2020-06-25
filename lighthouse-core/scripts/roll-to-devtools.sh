@@ -10,17 +10,14 @@
 
 #   yarn devtools
 
-# with a custom devtools front_end location:
+# Download DevTools as follows (to ~/src/devtools)
+# https://chromium.googlesource.com/devtools/devtools-frontend/+/HEAD/docs/workflows.md#standalone-checkout
+
+# or use a custom devtools front_end location:
 #   yarn devtools node_modules/temp-devtoolsfrontend/
 
-chromium_dir="$HOME/chromium/src"
+dt_dir="$HOME/src/devtools/devtools-frontend"
 check="\033[96m ✓\033[39m"
-
-if [[ -n "$1" ]]; then
-  dt_dir="$1"
-else
-  dt_dir="$chromium_dir/third_party/devtools-frontend/src"
-fi
 
 if [[ ! -d "$dt_dir" || ! -a "$dt_dir/front_end/shell.js" ]]; then
   echo -e "\033[31m✖ Error!\033[39m"
@@ -28,7 +25,7 @@ if [[ ! -d "$dt_dir" || ! -a "$dt_dir/front_end/shell.js" ]]; then
   echo "    $dt_dir"
   exit 1
 else
-  echo -e "$check Chromium folder in place."
+  echo -e "$check Chrome DevTools folder in place."
 fi
 
 fe_lh_dir="$dt_dir/front_end/third_party/lighthouse"

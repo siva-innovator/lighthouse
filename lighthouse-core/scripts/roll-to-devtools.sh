@@ -16,8 +16,13 @@
 # or use a custom devtools front_end location:
 #   yarn devtools node_modules/temp-devtoolsfrontend/
 
-dt_dir="$HOME/src/devtools/devtools-frontend"
 check="\033[96m ✓\033[39m"
+
+if [[ -n "$1" ]]; then	
+  dt_dir="$1"
+else	
+  dt_dir="$HOME/src/devtools/devtools-frontend"
+fi
 
 if [[ ! -d "$dt_dir" || ! -a "$dt_dir/front_end/shell.js" ]]; then
   echo -e "\033[31m✖ Error!\033[39m"

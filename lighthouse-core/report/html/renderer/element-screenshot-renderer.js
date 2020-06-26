@@ -24,6 +24,9 @@ function clamp(value, min, max) {
 
 class ElementScreenshotRenderer {
   /**
+   * Given the location of an element and the sizes of the preview and screenshot,
+   * compute the absolute positions (in screenshot coordinate scale) of the screenshot content 
+   * and the highlighted rect around the element.
    * @param {Rect} elementRectInScreenshotCoords
    * @param {Size} elementPreviewSizeInScreenshotCoords
    * @param {Size} screenshotSize

@@ -5,7 +5,7 @@
  */
 'use strict';
 
-/* globals self RectHelpers */
+/* globals self */
 
 /** @typedef {import('./dom.js')} DOM */
 /** @typedef {LH.Artifacts.Rect} Rect */
@@ -22,10 +22,20 @@ function clamp(value, min, max) {
   return value;
 }
 
+/**
+ * @param {Rect} rect
+ */
+function getRectCenterPoint(rect) {
+  return {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2,
+  };
+}
+
 class ElementScreenshotRenderer {
   /**
    * Given the location of an element and the sizes of the preview and screenshot,
-   * compute the absolute positions (in screenshot coordinate scale) of the screenshot content 
+   * compute the absolute positions (in screenshot coordinate scale) of the screenshot content
    * and the highlighted rect around the element.
    * @param {Rect} elementRectInScreenshotCoords
    * @param {Size} elementPreviewSizeInScreenshotCoords
@@ -34,7 +44,7 @@ class ElementScreenshotRenderer {
   static getScreenshotPositions(
       elementRectInScreenshotCoords, elementPreviewSizeInScreenshotCoords, screenshotSize) {
     //
-    const elementRectCenter = RectHelpers.getRectCenterPoint(elementRectInScreenshotCoords);
+    const elementRectCenter = getRectCenterPoint(elementRectInScreenshotCoords);
 
     // Try to center clipped region.
     const screenshotLeftVisibleEdge = clamp(

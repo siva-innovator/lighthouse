@@ -5,8 +5,6 @@
  */
 'use strict';
 
-/* globals self */
-
 /**
  * @param {LH.Artifacts.Rect} rect
  * @param {{x:number, y:number}} point
@@ -231,7 +229,7 @@ function allRectsContainedWithinEachOther(rectListA, rectListB) {
   return true;
 }
 
-const RectHelpers = {
+module.exports = {
   rectContainsPoint,
   rectContains,
   addRectWidthAndHeight,
@@ -248,9 +246,3 @@ const RectHelpers = {
   filterOutRectsContainedByOthers,
   filterOutTinyRects,
 };
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = RectHelpers;
-} else {
-  self.RectHelpers = RectHelpers;
-}

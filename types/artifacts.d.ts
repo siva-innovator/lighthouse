@@ -165,7 +165,7 @@ declare global {
         nodes: Array<{
           path: string;
           html: string;
-          boundingRect: Rect;
+          boundingRect?: Rect;
           snippet: string;
           target: Array<string>;
           failureSummary?: string;

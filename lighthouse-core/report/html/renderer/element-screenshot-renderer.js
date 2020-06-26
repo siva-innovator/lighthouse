@@ -41,9 +41,8 @@ class ElementScreenshotRenderer {
    * @param {Size} elementPreviewSizeInScreenshotCoords
    * @param {Size} screenshotSize
    */
-  static getScreenshotPositions(
-      elementRectInScreenshotCoords, elementPreviewSizeInScreenshotCoords, screenshotSize) {
-    //
+  static getScreenshotPositions(elementRectInScreenshotCoords,
+      elementPreviewSizeInScreenshotCoords, screenshotSize) {
     const elementRectCenter = getRectCenterPoint(elementRectInScreenshotCoords);
 
     // Try to center clipped region.
@@ -192,7 +191,6 @@ class ElementScreenshotRenderer {
    */
   static render(dom, templateContext, fullPageScreenshot, elementRectInScreenshotCoords,
       renderContainerSizeInDisplayCoords) {
-    //
     const tmpl = dom.cloneTemplate('#tmpl-lh-element-screenshot', templateContext);
     const containerEl = dom.find('.lh-element-screenshot', tmpl);
 

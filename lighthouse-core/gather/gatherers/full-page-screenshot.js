@@ -70,7 +70,8 @@ class FullPageScreenshot extends Gatherer {
       // So just cutting down the height a bit usually fixes the issue.
       screenshot = await this._takeScreenshot(passContext, 5000);
       if (screenshot.data.length > MAX_DATA_URL_SIZE) {
-        passContext.LighthouseRunWarnings.push('Full page screenshot is too big.');
+        passContext.LighthouseRunWarnings.push(
+          'Full page screenshot is too big–report won\'t show element screenshots.');
         return null;
       }
     }

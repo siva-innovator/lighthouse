@@ -1219,7 +1219,7 @@
 
 .lh-categories {
   width: 100%;
-  /* overflow: hidden; */
+  overflow: hidden;
 }
 
 .lh-category {

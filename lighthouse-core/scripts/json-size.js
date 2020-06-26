@@ -5,6 +5,11 @@
  */
 'use strict';
 
+/**
+ * @fileoverview A script for measuring the size of an each property of an object.
+ * Primary purpose is to better understand what takes up the most space in an LHR.
+ */
+
 /* eslint-disable no-console */
 
 // cat lhr.json | node lighthouse-core/scripts/json-size.js | less

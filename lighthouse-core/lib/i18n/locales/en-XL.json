@@ -1592,6 +1592,9 @@
   "lighthouse-core/lib/lh-error.js | dnsFailure": {
     "message": "D̂ŃŜ śêŕv̂ér̂ś ĉóûĺd̂ ńôt́ r̂éŝól̂v́ê t́ĥé p̂ŕôv́îd́êd́ d̂óm̂áîń."
   },
+  "lighthouse-core/lib/lh-error.js | docTypeInvalid": {
+    "message": "T̂h́ê ẃêb́p̂áĝé ŷóû h́âv́ê ṕr̂óv̂íd̂éd̂ áp̂ṕêár̂ś t̂ó b̂é n̂ón̂-H́T̂ḾL̂"
+  },
   "lighthouse-core/lib/lh-error.js | erroredRequiredArtifact": {
     "message": "R̂éq̂úîŕêd́ {artifactName} ĝát̂h́êŕêŕ êńĉóûńt̂ér̂éd̂ án̂ ér̂ŕôŕ: {errorMessage}"
   },

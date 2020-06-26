@@ -216,6 +216,31 @@ class GatherRunner {
   }
 
   /**
+   * Returns an error if we try to load a non-HTML page.
+   * @param {LH.Artifacts.NetworkRequest|undefined} mainRecord
+   * @return {LH.LighthouseError|undefined}
+   */
+  static getDocTypeError(mainRecord) {
+    // MIME types are case-insenstive
+    const HTML_MIME_REGEX = /^text\/html$/i;
+
+    // If we never requested a document, there's no doctype error, let other cases handle it.
+    if (!mainRecord) return undefined;
+
+    // If the main document failed, this error case is undefined, let other cases handle it.
+    if (mainRecord.failed) return undefined;
+
+    // mimeType is determined by the browser, we assume Chrome is determining mimeType correctly,
+    // independently of 'Content-Type' response headers, and always sending mimeType if well-formed.
+    if (mainRecord.mimeType) {
+      if (!HTML_MIME_REGEX.test(mainRecord.mimeType)) {
+        return new LHError(LHError.errors.INVALID_DOC_TYPE);
+      }
+    }
+    return undefined;
+  }
+
+  /**
    * Returns an error if the page load should be considered failed, e.g. from a
    * main document request failure, a security issue, etc.
    * @param {LH.Gatherer.PassContext} passContext
@@ -231,8 +256,13 @@ class GatherRunner {
       mainRecord = NetworkAnalyzer.findMainDocument(networkRecords, passContext.url);
     } catch (_) {}
 
+    console.log('mainRecord');
+    console.log(mainRecord);
     const networkError = GatherRunner.getNetworkError(mainRecord);
     const interstitialError = GatherRunner.getInterstitialError(mainRecord, networkRecords);
+    const docTypeError = GatherRunner.getDocTypeError(mainRecord);
+    console.log('docTypeError');
+    console.log(docTypeError);
 
     // Check to see if we need to ignore the page load failure.
     // e.g. When the driver is offline, the load will fail without page offline support.
@@ -245,6 +275,9 @@ class GatherRunner {
     // Prefer networkError over navigationError.
     // Example: `DNS_FAILURE` is better than `NO_FCP`.
     if (networkError) return networkError;
+
+    // We want to error when the page is not of MIME type text/html
+    if (docTypeError) return docTypeError;
 
     // Navigation errors are rather generic and express some failure of the page to render properly.
     // Use `navigationError` as the last resort.

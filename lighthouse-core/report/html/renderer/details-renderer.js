@@ -25,9 +25,12 @@ const URL_PREFIXES = ['http://', 'https://', 'data:'];
 class DetailsRenderer {
   /**
    * @param {DOM} dom
+   * @param {{fullPageScreenshot?: LH.Artifacts.FullPageScreenshot}} options
    */
-  constructor(dom) {
+  constructor(dom, options = {}) {
     this._dom = dom;
+    this._fullPageScreenshot = options.fullPageScreenshot;
+
     /** @type {ParentNode} */
     this._templateContext; // eslint-disable-line no-unused-expressions
   }
@@ -37,13 +40,6 @@ class DetailsRenderer {
    */
   setTemplateContext(context) {
     this._templateContext = context;
-  }
-
-  /**
-   * @param {LH.Artifacts.FullPageScreenshot} fullPageScreenshot
-   */
-  setFullPageScreenshot(fullPageScreenshot) {
-    this._fullPageScreenshot = fullPageScreenshot;
   }
 
   /**

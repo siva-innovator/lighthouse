@@ -26,7 +26,7 @@
 /** @typedef {import('./category-renderer')} CategoryRenderer */
 /** @typedef {import('./dom.js')} DOM */
 
-/* globals self, Util, DetailsRenderer, CategoryRenderer, I18n, PerformanceCategoryRenderer, PwaCategoryRenderer */
+/* globals self, Util, DetailsRenderer, CategoryRenderer, I18n, PerformanceCategoryRenderer, PwaCategoryRenderer, ElementScreenshotRenderer */
 
 class ReportRenderer {
   /**
@@ -193,10 +193,11 @@ class ReportRenderer {
     Util.i18n = i18n;
     Util.reportJson = report;
 
-    const detailsRenderer = new DetailsRenderer(this._dom);
     const fullPageScreenshot = /** @type {LH.Artifacts.FullPageScreenshot | undefined} */ (
       report.audits['full-page-screenshot'] && report.audits['full-page-screenshot'].details);
-    if (fullPageScreenshot) detailsRenderer.setFullPageScreenshot(fullPageScreenshot);
+    const detailsRenderer = new DetailsRenderer(this._dom, {
+      fullPageScreenshot,
+    });
 
     const categoryRenderer = new CategoryRenderer(this._dom, detailsRenderer);
     categoryRenderer.setTemplateContext(this._templateContext);
@@ -256,6 +257,11 @@ class ReportRenderer {
     reportContainer.appendChild(headerContainer);
     reportContainer.appendChild(reportSection);
     reportSection.appendChild(this._renderReportFooter(report));
+
+    if (fullPageScreenshot) {
+      reportContainer.appendChild(
+        ElementScreenshotRenderer.createBackgroundImageStyle(this._dom, fullPageScreenshot));
+    }
 
     return reportFragment;
   }

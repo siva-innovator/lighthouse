@@ -1546,10 +1546,6 @@
   overflow: hidden;
   float: left;
   margin-right: 20px;
-  cursor: zoom-out;
-}
-.lh-node .lh-element-screenshot {
-  cursor: zoom-in;
 }
 .lh-element-screenshot__content {
   overflow: hidden;
@@ -1580,6 +1576,13 @@
   align-items: center;
   justify-content: center;
   cursor: zoom-out;
+}
+
+.lh-feature-screenshot-overlay .lh-element-screenshot {
+  cursor: zoom-out;
+}
+.lh-feature-screenshot-overlay .lh-node .lh-element-screenshot {
+  cursor: zoom-in;
 }
 
 /*# sourceURL=report-styles.css */

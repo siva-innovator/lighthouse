@@ -105,18 +105,14 @@ class ElementScreenshotRenderer {
    * @param {DOM} dom
    * @param {LH.Artifacts.FullPageScreenshot} fullPageScreenshot
    */
-  static _installBackgroundImageStyle(dom, fullPageScreenshot) {
-    const containerEl = dom.find('.lh-container', dom.document());
-    if (containerEl.querySelector('#full-page-screenshot-style')) return;
-
-    const fullpageScreenshotUrl = fullPageScreenshot.data;
-    const fullPageScreenshotStyleTag = dom.createElement('style');
-    fullPageScreenshotStyleTag.id = 'full-page-screenshot-style';
-    fullPageScreenshotStyleTag.innerText = `
+  static createBackgroundImageStyle(dom, fullPageScreenshot) {
+    const styleEl = dom.createElement('style');
+    styleEl.id = 'full-page-screenshot-style';
+    styleEl.innerText = `
       .lh-element-screenshot__image {
-        background-image: url(${fullpageScreenshotUrl})
+        background-image: url(${fullPageScreenshot.data})
       }`;
-    containerEl.appendChild(fullPageScreenshotStyleTag);
+    return styleEl;
   }
 
   /**
@@ -127,9 +123,8 @@ class ElementScreenshotRenderer {
    * @param {LH.Artifacts.FullPageScreenshot} fullPageScreenshot
    */
   static installOverlayFeature(dom, templateContext, fullPageScreenshot) {
-    ElementScreenshotRenderer._installBackgroundImageStyle(dom, fullPageScreenshot);
-
     const reportEl = dom.find('.lh-report', dom.document());
+    reportEl.classList.add('lh-feature-screenshot-overlay');
     const renderContainerSizeInDisplayCoords = {
       width: dom.document().documentElement.clientWidth - reportEl.getBoundingClientRect().left,
       height: dom.document().documentElement.clientHeight - reportEl.getBoundingClientRect().top,

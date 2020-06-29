@@ -13,6 +13,8 @@
 
 /* global document */
 
+const log = require('lighthouse-logger');
+
 class Fetcher {
   /**
    * @param {import('./driver.js')} driver
@@ -171,7 +173,7 @@ class Fetcher {
 
     this.driver.evaluateAsync(`${injectIframe}(${JSON.stringify(url)})`, {
       useIsolation: true,
-    }).catch(err => console.error(err));
+    }).catch(err => log.error('Fetcher', err));
 
     return racePromise;
   }

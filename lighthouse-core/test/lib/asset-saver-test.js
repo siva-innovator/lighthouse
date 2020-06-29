@@ -45,11 +45,14 @@ describe('asset-saver helper', () => {
       return assetSaver.saveAssets(artifacts, dbwResults.audits, process.cwd() + '/the_file');
     });
 
-    it('trace file saved to disk with only trace events', () => {
+    it('trace file saved to disk with trace events and extra fakeEvents', () => {
       const traceFilename = 'the_file-0.trace.json';
       const traceFileContents = fs.readFileSync(traceFilename, 'utf8');
-      const traceEventsFromDisk = JSON.parse(traceFileContents).traceEvents;
-      assertTraceEventsEqual(traceEventsFromDisk, traceEvents);
+      const traceEventsOnDisk = JSON.parse(traceFileContents).traceEvents;
+      const traceEventsWithoutExtrasOnDisk = traceEventsOnDisk.slice(0, traceEvents.length);
+      const traceEventsFake = traceEventsOnDisk.slice(traceEvents.length);
+      assertTraceEventsEqual(traceEventsWithoutExtrasOnDisk, traceEvents);
+      assert.equal(traceEventsFake.length, 20);
       fs.unlinkSync(traceFilename);
     });
 

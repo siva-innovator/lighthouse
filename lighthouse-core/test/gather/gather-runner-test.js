@@ -1096,6 +1096,18 @@ describe('GatherRunner', function() {
     });
   });
 
+  describe('#getDocTypeError', () => {
+    /**
+     * @param {NetworkRequest} mainRecord
+     */
+    function getAndExpectError(mainRecord) {
+      const error = GatherRunner.getDocTypeError(mainRecord);
+      if (!error) throw new Error('expected a docType error');
+      return error;
+    }
+  });
+
+
   describe('#getPageLoadError', () => {
     /**
      * @param {RecursivePartial<LH.Gatherer.PassContext>} passContext

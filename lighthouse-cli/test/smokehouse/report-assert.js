@@ -174,7 +174,7 @@ function pruneExpectations(localConsole, lhr, expected) {
   /**
    * @param {*} obj
    */
-  function filter(obj) {
+  function pruneNewerChromeExpectations(obj) {
     for (const key of Object.keys(obj)) {
       const value = obj[key];
       if (!value || typeof value !== 'object') continue;
@@ -182,12 +182,12 @@ function pruneExpectations(localConsole, lhr, expected) {
         localConsole.log(`[${key}] failed chrome version check, pruning expectation: ${
           JSON.stringify(value, null, 2)}`);
         delete obj[key];
-      } else filter(value);
+      } else pruneNewerChromeExpectations(value);
     }
     delete obj._minChromeMajorVersion;
   }
 
-  filter(expected);
+  pruneNewerChromeExpectations(expected);
 }
 
 /**

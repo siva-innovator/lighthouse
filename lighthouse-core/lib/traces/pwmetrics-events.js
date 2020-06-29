@@ -189,7 +189,7 @@ class Metrics {
     /** @type {Array<LH.TraceEvent>} */
     const fakeEvents = [];
     metrics.forEach(metric => {
-      if (metric.id === 'navstart') {
+      if (metric.id === 'timeorigin') {
         return;
       }
       if (!metric.ts) {

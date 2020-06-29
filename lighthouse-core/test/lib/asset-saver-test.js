@@ -73,8 +73,8 @@ describe('asset-saver helper', () => {
       const beforeCount = countEvents(dbwTrace);
       return assetSaver.prepareAssets(mockArtifacts, dbwResults.audits).then(preparedAssets => {
         const afterCount = countEvents(preparedAssets[0].traceData);
-        const metricsSansNavStart = Metrics.metricsDefinitions.length - 1;
-        assert.equal(afterCount, beforeCount + (2 * metricsSansNavStart), 'unexpected event count');
+        const metricsMinusTimeOrigin = Metrics.metricsDefinitions.length - 1;
+        assert.equal(afterCount, beforeCount + (2 * metricsMinusTimeOrigin));
       });
     });
   });

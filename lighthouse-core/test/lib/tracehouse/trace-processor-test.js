@@ -440,7 +440,7 @@ Object {
           'ts': 2193564790059,
           'ph': 'R',
           'cat': 'blink.user_timing',
-          'name': 'timeOrigin',
+          'name': 'navigationStart',
           'args': {
             'frame': 'B192D1F3355A6F961EC8F0B01623C1FB',
             'data': {
@@ -601,7 +601,7 @@ Object {
 
     it('throws on traces missing a timeOrigin', () => {
       expect(() => TraceProcessor.computeTraceOfTab(noNavStartTrace))
-        .toThrowError('timeOrigin');
+        .toThrowError('navigationStart');
     });
 
     it('does not throw on traces missing an FCP', () => {

@@ -26,7 +26,7 @@ module.exports = {
       },
       serverResponseTimeByOrigin: {
         'http://localhost:10200': 1000,
-      }
+      },
     },
   },
 };

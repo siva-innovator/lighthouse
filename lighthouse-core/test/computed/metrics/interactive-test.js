@@ -12,16 +12,16 @@ const assert = require('assert').strict;
 const trace = require('../../fixtures/traces/progressive-app-m60.json');
 const devtoolsLog = require('../../fixtures/traces/progressive-app-m60.devtools.log.json');
 
-function generateNetworkRecords(records, navStart) {
-  const navStartInMs = navStart / 1000;
+function generateNetworkRecords(records, timeOrigin) {
+  const timeOriginInMs = timeOrigin / 1000;
   return records.map(item => {
     return {
       failed: item.failed || false,
       statusCode: item.statusCode || 200,
       requestMethod: item.requestMethod || 'GET',
       finished: typeof item.finished === 'undefined' ? true : item.finished,
-      startTime: (item.start + navStartInMs) / 1000,
-      endTime: item.end === -1 ? -1 : (item.end + navStartInMs) / 1000,
+      startTime: (item.start + timeOriginInMs) / 1000,
+      endTime: item.end === -1 ? -1 : (item.end + timeOriginInMs) / 1000,
     };
   });
 }

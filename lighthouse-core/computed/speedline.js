@@ -25,9 +25,9 @@ class Speedline {
       const traceEvents = trace.traceEvents.slice();
       // Force use of nav start as reference point for speedline
       // See https://github.com/GoogleChrome/lighthouse/issues/2095
-      const navStart = traceOfTab.timestamps.timeOrigin;
+      const timeOrigin = traceOfTab.timestamps.timeOrigin;
       return speedline(traceEvents, {
-        timeOrigin: navStart,
+        timeOrigin,
         fastMode: true,
         include: 'speedIndex',
       });

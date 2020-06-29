@@ -302,8 +302,8 @@ class TraceProcessor {
    * selected percentiles within a window of the main thread.
    * @see https://docs.google.com/document/d/1b9slyaB9yho91YTOkAQfpCdULFkZM9LqsipcX3t7He8/preview
    * @param {Array<ToplevelEvent>} events
-   * @param {number} startTime Start time (in ms relative to navstart) of range of interest.
-   * @param {number} endTime End time (in ms relative to navstart) of range of interest.
+   * @param {number} startTime Start time (in ms relative to timeOrigin) of range of interest.
+   * @param {number} endTime End time (in ms relative to timeOrigin) of range of interest.
    * @param {!Array<number>=} percentiles Optional array of percentiles to compute. Defaults to [0.5, 0.75, 0.9, 0.99, 1].
    * @return {!Array<{percentile: number, time: number}>}
    */
@@ -324,8 +324,8 @@ class TraceProcessor {
   /**
    * Provides durations in ms of all main thread top-level events
    * @param {Array<ToplevelEvent>} topLevelEvents
-   * @param {number} startTime Optional start time (in ms relative to navstart) of range of interest. Defaults to navstart.
-   * @param {number} endTime Optional end time (in ms relative to navstart) of range of interest. Defaults to trace end.
+   * @param {number} startTime Optional start time (in ms relative to timeOrigin) of range of interest. Defaults to 0.
+   * @param {number} endTime Optional end time (in ms relative to timeOrigin) of range of interest. Defaults to trace end.
    * @return {{durations: Array<number>, clippedLength: number}}
    */
   static getMainThreadTopLevelEventDurations(topLevelEvents, startTime = 0, endTime = Infinity) {
@@ -366,8 +366,8 @@ class TraceProcessor {
    * Provides the top level events on the main thread with timestamps in ms relative to navigation
    * start.
    * @param {LH.Artifacts.TraceOfTab} tabTrace
-   * @param {number=} startTime Optional start time (in ms relative to navstart) of range of interest. Defaults to navstart.
-   * @param {number=} endTime Optional end time (in ms relative to navstart) of range of interest. Defaults to trace end.
+   * @param {number=} startTime Optional start time (in ms relative to timeOrigin) of range of interest. Defaults to 0.
+   * @param {number=} endTime Optional end time (in ms relative to timeOrigin) of range of interest. Defaults to trace end.
    * @return {Array<ToplevelEvent>}
    */
   static getMainThreadTopLevelEvents(tabTrace, startTime = 0, endTime = Infinity) {

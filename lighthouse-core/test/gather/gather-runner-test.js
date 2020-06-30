@@ -1105,6 +1105,40 @@ describe('GatherRunner', function() {
       if (!error) throw new Error('expected a docType error');
       return error;
     }
+
+    it('passes when the page was not requested', () => {
+      expect(GatherRunner.getDocTypeError(undefined)).toBeUndefined();
+    });
+
+    it('passes when page fails to load normally', () => {
+      const url = 'http://the-page.com';
+      const mainRecord = new NetworkRequest();
+      mainRecord.url = url;
+      mainRecord.failed = true;
+      mainRecord.localizedFailDescription = 'foobar';
+      expect(GatherRunner.getDocTypeError(mainRecord)).toBeUndefined();
+    });
+
+    it('passes when the page is of MIME type text/html', () => {
+      const url = 'http://the-page.com';
+      const mainRecord = new NetworkRequest();
+      const mimeType = 'text/html';
+      mainRecord.url = url;
+      mainRecord.mimeType = mimeType;
+      expect(GatherRunner.getDocTypeError(mainRecord)).toBeUndefined();
+    });
+
+    it('fails when the page is not of MIME type text/html', () => {
+      const url = 'http://the-page.com';
+      const mimeType = 'application/xml';
+      const mainRecord = new NetworkRequest();
+      mainRecord.url = url;
+      mainRecord.mimeType = mimeType;
+      const error = getAndExpectError(mainRecord);
+      expect(error.message).toEqual('INVALID_DOC_TYPE');
+      expect(error.code).toEqual('INVALID_DOC_TYPE');
+      expect(error.friendlyMessage).toBeDisplayString(/appears to be non-HTML/);
+    });
   });
 
 

@@ -13,8 +13,6 @@
 
 /* global document */
 
-const log = require('lighthouse-logger');
-
 class Fetcher {
   /**
    * @param {import('./driver.js')} driver

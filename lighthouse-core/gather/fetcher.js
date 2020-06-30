@@ -171,11 +171,12 @@ class Fetcher {
       requestInterceptionPromise,
     ]).finally(() => clearTimeout(timeoutHandle));
 
-    this.driver.evaluateAsync(`${injectIframe}(${JSON.stringify(url)})`, {
+    const injectionPromise = this.driver.evaluateAsync(`${injectIframe}(${JSON.stringify(url)})`, {
       useIsolation: true,
-    }).catch(err => log.error('Fetcher', err));
+    });
 
-    return racePromise;
+    const [fetchResult] = await Promise.all([racePromise, injectionPromise]);
+    return fetchResult;
   }
 }
 

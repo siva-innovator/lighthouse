@@ -256,15 +256,9 @@ class GatherRunner {
       mainRecord = NetworkAnalyzer.findMainDocument(networkRecords, passContext.url);
     } catch (_) {}
 
-    //console.log('mainRecord');
-    //if (mainRecord) {
-     // console.log(mainRecord.mimeType);
-      //console.log(mainRecord.mimeType === '');
-    //}
     const networkError = GatherRunner.getNetworkError(mainRecord);
     const interstitialError = GatherRunner.getInterstitialError(mainRecord, networkRecords);
     const docTypeError = GatherRunner.getDocTypeError(mainRecord);
-    //console.log(docTypeError);
 
     // Check to see if we need to ignore the page load failure.
     // e.g. When the driver is offline, the load will fail without page offline support.

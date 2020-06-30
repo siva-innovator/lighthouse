@@ -232,7 +232,7 @@ class GatherRunner {
 
     // mimeType is determined by the browser, we assume Chrome is determining mimeType correctly,
     // independently of 'Content-Type' response headers, and always sending mimeType if well-formed.
-    if (mainRecord.mimeType) {
+    if (mainRecord.mimeType || mainRecord.mimeType === '') {
       if (!HTML_MIME_REGEX.test(mainRecord.mimeType)) {
         return new LHError(LHError.errors.INVALID_DOC_TYPE);
       }
@@ -256,13 +256,15 @@ class GatherRunner {
       mainRecord = NetworkAnalyzer.findMainDocument(networkRecords, passContext.url);
     } catch (_) {}
 
-    console.log('mainRecord');
-    console.log(mainRecord);
+    //console.log('mainRecord');
+    //if (mainRecord) {
+     // console.log(mainRecord.mimeType);
+      //console.log(mainRecord.mimeType === '');
+    //}
     const networkError = GatherRunner.getNetworkError(mainRecord);
     const interstitialError = GatherRunner.getInterstitialError(mainRecord, networkRecords);
     const docTypeError = GatherRunner.getDocTypeError(mainRecord);
-    console.log('docTypeError');
-    console.log(docTypeError);
+    //console.log(docTypeError);
 
     // Check to see if we need to ignore the page load failure.
     // e.g. When the driver is offline, the load will fail without page offline support.

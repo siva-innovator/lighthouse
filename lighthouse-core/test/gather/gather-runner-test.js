@@ -1161,26 +1161,30 @@ describe('GatherRunner', function() {
       navigationError = /** @type {LH.LighthouseError} */ (new Error('NAVIGATION_ERROR'));
     });
 
-    it('passes when the page is loaded', () => {
+    it('passes when the page is loaded and doc type is text/html', () => {
       const passContext = {
         url: 'http://the-page.com',
         passConfig: {loadFailureMode: LoadFailureMode.fatal},
       };
       const mainRecord = new NetworkRequest();
       const loadData = {networkRecords: [mainRecord]};
+      const mimeType = 'text/html';
       mainRecord.url = passContext.url;
+      mainRecord.mimeType = mimeType;
       const error = GatherRunner.getPageLoadError(passContext, loadData, undefined);
       expect(error).toBeUndefined();
     });
 
-    it('passes when the page is loaded, ignoring any fragment', () => {
+    it('passes when the page is loaded and doc type is text/html, ignoring any fragment', () => {
       const passContext = {
         url: 'http://example.com/#/page/list',
         passConfig: {loadFailureMode: LoadFailureMode.fatal},
       };
       const mainRecord = new NetworkRequest();
       const loadData = {networkRecords: [mainRecord]};
+      const mimeType = 'text/html';
       mainRecord.url = 'http://example.com';
+      mainRecord.mimeType = mimeType;
       const error = GatherRunner.getPageLoadError(passContext, loadData, undefined);
       expect(error).toBeUndefined();
     });
@@ -1217,7 +1221,7 @@ describe('GatherRunner', function() {
       expect(error.message).toEqual('CHROME_INTERSTITIAL_ERROR');
     });
 
-    it('fails with network error next', () => {
+    it('fails with network error second', () => {
       const passContext = {
         url: 'http://the-page.com',
         passConfig: {loadFailureMode: LoadFailureMode.fatal},
@@ -1232,6 +1236,22 @@ describe('GatherRunner', function() {
       expect(error.message).toEqual('FAILED_DOCUMENT_REQUEST');
     });
 
+    it('fails with doc type error third', () => {
+      const passContext = {
+        url: 'http://the-page.com',
+        passConfig: {loadFailureMode: LoadFailureMode.fatal},
+      };
+      const mainRecord = new NetworkRequest();
+      const loadData = {networkRecords: [mainRecord]};
+
+      const mimeType = 'application/xml';
+      mainRecord.url = passContext.url;
+      mainRecord.mimeType = mimeType;
+
+      const error = getAndExpectError(passContext, loadData, navigationError);
+      expect(error.message).toEqual('INVALID_DOC_TYPE');
+    });
+
     it('fails with nav error last', () => {
       const passContext = {
         url: 'http://the-page.com',
@@ -1240,7 +1260,9 @@ describe('GatherRunner', function() {
       const mainRecord = new NetworkRequest();
       const loadData = {networkRecords: [mainRecord]};
 
+      const mimeType = 'text/html';
       mainRecord.url = passContext.url;
+      mainRecord.mimeType = mimeType;
 
       const error = getAndExpectError(passContext, loadData, navigationError);
       expect(error.message).toEqual('NAVIGATION_ERROR');
@@ -1254,7 +1276,9 @@ describe('GatherRunner', function() {
       const mainRecord = new NetworkRequest();
       const loadData = {networkRecords: [mainRecord]};
 
+      const mimeType = 'text/html';
       mainRecord.url = passContext.url;
+      mainRecord.mimeType = mimeType;
 
       const error = getAndExpectError(passContext, loadData, navigationError);
       expect(error.message).toEqual('NAVIGATION_ERROR');

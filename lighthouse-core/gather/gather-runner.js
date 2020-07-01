@@ -272,7 +272,7 @@ class GatherRunner {
     // Example: `DNS_FAILURE` is better than `NO_FCP`.
     if (networkError) return networkError;
 
-    // We want to error when the page is not of MIME type text/html
+    // Error if page is not HTML.
     if (docTypeError) return docTypeError;
 
     // Navigation errors are rather generic and express some failure of the page to render properly.

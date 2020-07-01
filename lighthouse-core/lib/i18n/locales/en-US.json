@@ -1593,7 +1593,7 @@
     "message": "DNS servers could not resolve the provided domain."
   },
   "lighthouse-core/lib/lh-error.js | docTypeInvalid": {
-    "message": "The webpage you have provided appears to be non-HTML"
+    "message": "The page provided is not HTML"
   },
   "lighthouse-core/lib/lh-error.js | erroredRequiredArtifact": {
     "message": "Required {artifactName} gatherer encountered an error: {errorMessage}"

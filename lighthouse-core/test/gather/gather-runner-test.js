@@ -1161,30 +1161,28 @@ describe('GatherRunner', function() {
       navigationError = /** @type {LH.LighthouseError} */ (new Error('NAVIGATION_ERROR'));
     });
 
-    it('passes when the page is loaded and doc type is text/html', () => {
+    it('passes when the page is loaded', () => {
       const passContext = {
         url: 'http://the-page.com',
         passConfig: {loadFailureMode: LoadFailureMode.fatal},
       };
       const mainRecord = new NetworkRequest();
       const loadData = {networkRecords: [mainRecord]};
-      const mimeType = 'text/html';
       mainRecord.url = passContext.url;
-      mainRecord.mimeType = mimeType;
+      mainRecord.mimeType = 'text/html';
       const error = GatherRunner.getPageLoadError(passContext, loadData, undefined);
       expect(error).toBeUndefined();
     });
 
-    it('passes when the page is loaded and doc type is text/html, ignoring any fragment', () => {
+    it('passes when the page is loaded, ignoring any fragment', () => {
       const passContext = {
         url: 'http://example.com/#/page/list',
         passConfig: {loadFailureMode: LoadFailureMode.fatal},
       };
       const mainRecord = new NetworkRequest();
       const loadData = {networkRecords: [mainRecord]};
-      const mimeType = 'text/html';
       mainRecord.url = 'http://example.com';
-      mainRecord.mimeType = mimeType;
+      mainRecord.mimeType = 'text/html';
       const error = GatherRunner.getPageLoadError(passContext, loadData, undefined);
       expect(error).toBeUndefined();
     });
@@ -1244,9 +1242,8 @@ describe('GatherRunner', function() {
       const mainRecord = new NetworkRequest();
       const loadData = {networkRecords: [mainRecord]};
 
-      const mimeType = 'application/xml';
       mainRecord.url = passContext.url;
-      mainRecord.mimeType = mimeType;
+      mainRecord.mimeType = 'application/xml';
 
       const error = getAndExpectError(passContext, loadData, navigationError);
       expect(error.message).toEqual('INVALID_DOC_TYPE');
@@ -1260,9 +1257,8 @@ describe('GatherRunner', function() {
       const mainRecord = new NetworkRequest();
       const loadData = {networkRecords: [mainRecord]};
 
-      const mimeType = 'text/html';
       mainRecord.url = passContext.url;
-      mainRecord.mimeType = mimeType;
+      mainRecord.mimeType = 'text/html';
 
       const error = getAndExpectError(passContext, loadData, navigationError);
       expect(error.message).toEqual('NAVIGATION_ERROR');
@@ -1276,9 +1272,8 @@ describe('GatherRunner', function() {
       const mainRecord = new NetworkRequest();
       const loadData = {networkRecords: [mainRecord]};
 
-      const mimeType = 'text/html';
       mainRecord.url = passContext.url;
-      mainRecord.mimeType = mimeType;
+      mainRecord.mimeType = 'text/html';
 
       const error = getAndExpectError(passContext, loadData, navigationError);
       expect(error.message).toEqual('NAVIGATION_ERROR');

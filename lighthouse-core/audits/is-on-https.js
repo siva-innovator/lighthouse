@@ -131,9 +131,6 @@ class HTTPS extends Audit {
       return {
         score: Number(items.length === 0),
         displayValue,
-        extendedInfo: {
-          value: items,
-        },
         details: Audit.makeTableDetails(headings, items),
       };
     });

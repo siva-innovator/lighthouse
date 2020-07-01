@@ -5,19 +5,8 @@
  */
 'use strict';
 
-/**
- * Config file for running PWA smokehouse audits.
- */
 module.exports = {
-  extends: 'lighthouse:default',
-  settings: {
-    onlyCategories: [
-      'performance',
-    ],
-    onlyAudits: [
-      'legacy-javascript',
-    ],
-  },
-  // Not in default yet.
-  audits: ['legacy-javascript'],
+  // NODE_ENV is set to test by jest and by smokehouse CLI runner
+  // CI as a catchall for everything we do in Travis/GitHub Actions
+  isUnderTest: !!process.env.CI || process.env.NODE_ENV === 'test',
 };

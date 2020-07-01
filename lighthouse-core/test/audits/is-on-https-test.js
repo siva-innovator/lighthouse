@@ -30,7 +30,7 @@ describe('Security: HTTPS audit', () => {
     ]), {computedCache: new Map()}).then(result => {
       assert.strictEqual(result.score, 0);
       expect(result.displayValue).toBeDisplayString('2 insecure requests found');
-      assert.strictEqual(result.extendedInfo.value.length, 2);
+      assert.strictEqual(result.details.items.length, 2);
     });
   });
 

@@ -1137,7 +1137,7 @@ describe('GatherRunner', function() {
       const error = getAndExpectError(mainRecord);
       expect(error.message).toEqual('INVALID_DOC_TYPE');
       expect(error.code).toEqual('INVALID_DOC_TYPE');
-      expect(error.friendlyMessage).toBeDisplayString(/appears to be non-HTML/);
+      expect(error.friendlyMessage).toBeDisplayString(/The page provided is not HTML/);
     });
   });
 

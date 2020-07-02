@@ -38,7 +38,7 @@ const GatherRunner = {
   getInstallabilityErrors: makeParamsOptional(GatherRunner_.getInstallabilityErrors),
   getInterstitialError: makeParamsOptional(GatherRunner_.getInterstitialError),
   getNetworkError: makeParamsOptional(GatherRunner_.getNetworkError),
-  getDocTypeError: makeParamsOptional(GatherRunner_.getDocTypeError),
+  getNonHtmlError: makeParamsOptional(GatherRunner_.getNonHtmlError),
   getPageLoadError: makeParamsOptional(GatherRunner_.getPageLoadError),
   getWebAppManifest: makeParamsOptional(GatherRunner_.getWebAppManifest),
   initializeBaseArtifacts: makeParamsOptional(GatherRunner_.initializeBaseArtifacts),
@@ -1096,27 +1096,18 @@ describe('GatherRunner', function() {
     });
   });
 
-  describe('#getDocTypeError', () => {
+  describe('#getNonHtmlError', () => {
     /**
      * @param {NetworkRequest} mainRecord
      */
     function getAndExpectError(mainRecord) {
-      const error = GatherRunner.getDocTypeError(mainRecord);
-      if (!error) throw new Error('expected a docType error');
+      const error = GatherRunner.getNonHtmlError(mainRecord);
+      if (!error) throw new Error('expected a non-HTML error');
       return error;
     }
 
     it('passes when the page was not requested', () => {
-      expect(GatherRunner.getDocTypeError(undefined)).toBeUndefined();
-    });
-
-    it('passes when page fails to load normally', () => {
-      const url = 'http://the-page.com';
-      const mainRecord = new NetworkRequest();
-      mainRecord.url = url;
-      mainRecord.failed = true;
-      mainRecord.localizedFailDescription = 'foobar';
-      expect(GatherRunner.getDocTypeError(mainRecord)).toBeUndefined();
+      expect(GatherRunner.getNonHtmlError(undefined)).toBeUndefined();
     });
 
     it('passes when the page is of MIME type text/html', () => {
@@ -1125,7 +1116,7 @@ describe('GatherRunner', function() {
       const mimeType = 'text/html';
       mainRecord.url = url;
       mainRecord.mimeType = mimeType;
-      expect(GatherRunner.getDocTypeError(mainRecord)).toBeUndefined();
+      expect(GatherRunner.getNonHtmlError(mainRecord)).toBeUndefined();
     });
 
     it('fails when the page is not of MIME type text/html', () => {
@@ -1135,9 +1126,9 @@ describe('GatherRunner', function() {
       mainRecord.url = url;
       mainRecord.mimeType = mimeType;
       const error = getAndExpectError(mainRecord);
-      expect(error.message).toEqual('INVALID_DOC_TYPE');
-      expect(error.code).toEqual('INVALID_DOC_TYPE');
-      expect(error.friendlyMessage).toBeDisplayString(/The page provided is not HTML/);
+      expect(error.message).toEqual('NON_HTML');
+      expect(error.code).toEqual('NON_HTML');
+      expect(error.friendlyMessage).toBeDisplayString(/is not HTML \(served as/);
     });
   });
 
@@ -1234,7 +1225,7 @@ describe('GatherRunner', function() {
       expect(error.message).toEqual('FAILED_DOCUMENT_REQUEST');
     });
 
-    it('fails with doc type error third', () => {
+    it('fails with non-HTML error third', () => {
       const passContext = {
         url: 'http://the-page.com',
         passConfig: {loadFailureMode: LoadFailureMode.fatal},
@@ -1246,7 +1237,7 @@ describe('GatherRunner', function() {
       mainRecord.mimeType = 'application/xml';
 
       const error = getAndExpectError(passContext, loadData, navigationError);
-      expect(error.message).toEqual('INVALID_DOC_TYPE');
+      expect(error.message).toEqual('NON_HTML');
     });
 
     it('fails with nav error last', () => {

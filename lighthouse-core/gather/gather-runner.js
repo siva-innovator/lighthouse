@@ -220,21 +220,18 @@ class GatherRunner {
    * @param {LH.Artifacts.NetworkRequest|undefined} mainRecord
    * @return {LH.LighthouseError|undefined}
    */
-  static getDocTypeError(mainRecord) {
+  static getNonHtmlError(mainRecord) {
     // MIME types are case-insenstive
     const HTML_MIME_REGEX = /^text\/html$/i;
 
     // If we never requested a document, there's no doctype error, let other cases handle it.
     if (!mainRecord) return undefined;
 
-    // If the main document failed, this error case is undefined, let other cases handle it.
-    if (mainRecord.failed) return undefined;
-
     // mimeType is determined by the browser, we assume Chrome is determining mimeType correctly,
     // independently of 'Content-Type' response headers, and always sending mimeType if well-formed.
     if (mainRecord.mimeType || mainRecord.mimeType === '') {
       if (!HTML_MIME_REGEX.test(mainRecord.mimeType)) {
-        return new LHError(LHError.errors.INVALID_DOC_TYPE);
+        return new LHError(LHError.errors.NON_HTML, {mimeType: mainRecord.mimeType});
       }
     }
     return undefined;
@@ -258,7 +255,7 @@ class GatherRunner {
 
     const networkError = GatherRunner.getNetworkError(mainRecord);
     const interstitialError = GatherRunner.getInterstitialError(mainRecord, networkRecords);
-    const docTypeError = GatherRunner.getDocTypeError(mainRecord);
+    const nonHtmlError = GatherRunner.getNonHtmlError(mainRecord);
 
     // Check to see if we need to ignore the page load failure.
     // e.g. When the driver is offline, the load will fail without page offline support.
@@ -273,7 +270,7 @@ class GatherRunner {
     if (networkError) return networkError;
 
     // Error if page is not HTML.
-    if (docTypeError) return docTypeError;
+    if (nonHtmlError) return nonHtmlError;
 
     // Navigation errors are rather generic and express some failure of the page to render properly.
     // Use `navigationError` as the last resort.

@@ -47,8 +47,11 @@ const UIStrings = {
   internalChromeError: 'An internal Chrome error occurred. Please restart Chrome and try re-running Lighthouse.',
   /** Error message explaining that fetching the resources of the webpage has taken longer than the maximum time. */
   requestContentTimeout: 'Fetching resource content has exceeded the allotted time',
-  /** Error message explaining that the webpage is non-HTML, so audits are ill-defined **/
-  docTypeInvalid: 'The page provided is not HTML',
+  /**
+   * @description Error message explaining that the webpage is non-HTML, so audits are ill-defined.
+   * @example {application/xml} mimeType
+   * */
+  nonHtml: 'The page provided is not HTML (served as MIME type {mimeType}).',
   /** Error message explaining that the provided URL Lighthouse points to is not valid, and cannot be loaded. */
   urlInvalid: 'The URL you have provided appears to be invalid.',
   /**
@@ -315,9 +318,10 @@ const ERRORS = {
     lhrRuntimeError: true,
   },
   /* Used when the page is non-HTML. */
-  INVALID_DOC_TYPE: {
-    code: 'INVALID_DOC_TYPE',
-    message: UIStrings.docTypeInvalid,
+  NON_HTML: {
+    code: 'NON_HTML',
+    message: UIStrings.nonHtml,
+    lhrRuntimeError: true,
   },
 
   // Protocol internal failures

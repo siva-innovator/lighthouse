@@ -1592,9 +1592,6 @@
   "lighthouse-core/lib/lh-error.js | dnsFailure": {
     "message": "DNS servers could not resolve the provided domain."
   },
-  "lighthouse-core/lib/lh-error.js | docTypeInvalid": {
-    "message": "The page provided is not HTML"
-  },
   "lighthouse-core/lib/lh-error.js | erroredRequiredArtifact": {
     "message": "Required {artifactName} gatherer encountered an error: {errorMessage}"
   },
@@ -1603,6 +1600,9 @@
   },
   "lighthouse-core/lib/lh-error.js | missingRequiredArtifact": {
     "message": "Required {artifactName} gatherer did not run."
+  },
+  "lighthouse-core/lib/lh-error.js | nonHtml": {
+    "message": "The page provided is not HTML (served as MIME type {mimeType})."
   },
   "lighthouse-core/lib/lh-error.js | pageLoadFailed": {
     "message": "Lighthouse was unable to reliably load the page you requested. Make sure you are testing the correct URL and that the server is properly responding to all requests."

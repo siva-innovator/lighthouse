@@ -416,7 +416,7 @@ Yes! Details in [Lighthouse configuration](./docs/configuration.md).
 Good question. Network and CPU throttling are applied by default in a Lighthouse run. The network
 attempts to emulate slow 4G connectivity and the CPU is slowed down 4x from your machine's default speed. If you
 prefer to run Lighthouse without throttling, you'll have to use the CLI and disable it with the
-`--throttling.*` flags mentioned above.
+`--throttling.*` flags mentioned above line.
 
 Read more in our [guide to network throttling](./docs/throttling.md).
 
